@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2016",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "typeRoots": ["./node_modules/@types", "./src/types/"],
+    "types": ["node", "mocha"]
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "./node_modules/",
+    "./dist/"
+  ]
+}

@@ -1,0 +1,22 @@
+"user": {
+  "id": "Number",
+  "username": "String",
+  "phone": "Number",
+  "picture": "Image",
+  "password": "Hash"
+},
+"conversation": {
+  "participants": {
+    "id": [
+      "userId"
+    ]
+  },
+  "messages": [
+    {
+      "id": "Number",
+      "datetime": "Date/Time",
+      "sender": "userId",
+      "message": "String"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+File in constant change. Tasks for a short period of time relationed with the current feature being implemented.
+
+0_ Refactoring
+
+1_ tests
+
+2_ Swagger
+

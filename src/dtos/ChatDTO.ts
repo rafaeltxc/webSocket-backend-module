@@ -31,6 +31,12 @@ export default class ChatDTO implements ChatObj {
     return new ChatDTO();
   }
 
+  /**
+   * Set chat id.
+   *
+   * @param {ObjectId} id - Chat id.
+   * @returns {ChatDTO}
+   */
   public setId(id: Schema.Types.ObjectId): ChatDTO {
     this.id = id;
     return this;

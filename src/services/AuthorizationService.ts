@@ -65,10 +65,8 @@ export default class AuthorizationService {
       );
 
       const data: UserObj = await response.json();
-      
-      const validated: string | JwtPayload = jwt.verify(data.token!, this.key, {
-        maxAge: "7d",
-      });
+
+      const validated: string | JwtPayload = jwt.verify(data.token!, this.key);
 
       if (validated) {
         return true;

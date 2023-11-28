@@ -1,8 +1,8 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { ChatObj, MessageObj, UserObj } from "../types/Ambient";
-import App from "../config/App";
-import userModel from "../models/UserModel";
-import chatModel from "../models/ChatModel";
+import { ChatObj, MessageObj, UserObj } from "../../types/Ambient";
+import App from "../../config/App";
+import userModel from "../../models/UserModel";
+import chatModel from "../../models/ChatModel";
 import express from "express";
 import mongoose from "mongoose";
 import chaiHttp from "chai-http";

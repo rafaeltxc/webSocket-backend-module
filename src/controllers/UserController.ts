@@ -152,7 +152,7 @@ export default class UserController {
           .build();
 
         console.log(token);
-        
+
         response.status(200).json(token);
       } else {
         throw new Error("Missing request data");
@@ -192,7 +192,8 @@ export default class UserController {
           .setId(result.id!)
           .setUsername(result.username)
           .setPassword(result.password)
-          .setEmail(result.email);
+          .setEmail(result.email)
+          .build();
 
         database.commitTransaction();
         response.status(201).json(userDTO);

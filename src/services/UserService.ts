@@ -1,3 +1,4 @@
+import UserModel from "models/UserModel";
 import Encipher from "../encryptation/Encipher";
 import { UserObj } from "../types/Ambient";
 

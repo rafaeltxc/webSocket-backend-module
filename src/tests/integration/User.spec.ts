@@ -1,7 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { UserObj } from "../types/Ambient";
-import App from "../config/App";
-import model from "../models/UserModel";
+import { UserObj } from "../../types/Ambient";
+import App from "../../config/App";
+import model from "../../models/UserModel";
 import express from "express";
 import mongoose from "mongoose";
 import chaiHttp from "chai-http";
@@ -15,6 +15,7 @@ describe("User tests", () => {
   chai.use(chaiHttp);
   let memorydb: MongoMemoryServer;
   let userId: mongoose.Schema.Types.ObjectId;
+  let token: string;
   const userObj: UserObj = {
     username: "test",
     password: "test",
@@ -57,7 +58,19 @@ describe("User tests", () => {
 
     const newUser = new model(userObj);
     const user = await newUser.save();
+
     userId = user.id;
+
+    chai
+      .request(app)
+      .post(`/auth/sign/user-token/${userId}`)
+      .set("Content-Type", "application/json")
+      .send({ password: userObj.password })
+      .end((err, res) => {
+        console.log(res);
+        
+        token = res.body.data.token;
+      });
   });
 
   /**

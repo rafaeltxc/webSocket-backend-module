@@ -43,7 +43,7 @@ export default class AuthController {
 
         const signed = jwt.sign({ id }, key, {
           algorithm: "HS256",
-          expiresIn: "10m",
+          expiresIn: "1h",
         });
 
         const newToken: string = helper.concatWithSpaces("Bearer", signed);
@@ -76,7 +76,6 @@ export default class AuthController {
       if (id && password) {
         const newToken = jwt.sign({ id }, key, {
           algorithm: "HS256",
-          expiresIn: "7d",
         });
 
         await userService.updateToken(id, newToken, password);
@@ -137,7 +136,7 @@ export default class AuthController {
         }
 
         const validated: string | JwtPayload = jwt.verify(token, key, {
-          maxAge: "10m",
+          maxAge: "1h",
         });
         if (!validated) {
           throw new Error("Invalid access token");

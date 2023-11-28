@@ -29,6 +29,7 @@ export default class UserRoute {
     this.router.get("/", this.controller.findAll);
     this.router.get("/:id", this.controller.findById);
     this.router.get("/email/:email", this.controller.findByEmail);
+    this.router.get("/token/:id", this.controller.findToAuth);
     this.router.post("/", this.controller.createOne);
     this.router.put("/:id", this.controller.updateOne);
     this.router.put("/token/:id", this.controller.updateToken);

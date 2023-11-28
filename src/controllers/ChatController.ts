@@ -4,6 +4,8 @@ import model from "../models/ChatModel";
 import _ from "lodash";
 import Database from "../config/Database";
 import AuthorizationService from "../services/AuthorizationService";
+import ChatDTO from "../dtos/ChatDTO";
+import mongoose from "mongoose";
 
 /** Dependencies */
 const database = new Database();
@@ -30,7 +32,22 @@ export default class ChatController {
   ): Promise<void> {
     try {
       const result: ChatObj[] = await model.find();
-      response.status(200).json(result);
+      if (!result) {
+        throw new Error("Chat no found");
+      }
+
+      const chatList: ChatObj[] = [];
+      result.forEach((chat) => {
+        chatList.push(
+          ChatDTO.builder()
+            .setId(chat.id!)
+            .setParticipants({ ...chat.participants })
+            .setConversation({ ...chat.conversation })
+            .build(),
+        );
+      });
+
+      response.status(200).json(chatList);
     } catch (error) {
       next(error);
     }
@@ -54,7 +71,17 @@ export default class ChatController {
     try {
       if (id) {
         const result: ChatObj | null = await model.findById(id);
-        response.status(200).json(result);
+        if (!result) {
+          throw new Error("Chat no found");
+        }
+
+        const chat: ChatObj = ChatDTO.builder()
+          .setId(result.id!)
+          .setParticipants({ ...result.participants })
+          .setConversation({ ...result.conversation })
+          .build();
+
+        response.status(200).json(chat);
       } else {
         throw new Error("Missing request data");
       }
@@ -95,8 +122,14 @@ export default class ChatController {
         const chat = new model(body);
         const result: ChatObj = await chat.save();
 
+        const chatDTO: ChatObj = ChatDTO.builder()
+          .setId(result.id!)
+          .setParticipants({ ...result.participants })
+          .setConversation({ ...result.conversation })
+          .build();
+
         database.commitTransaction();
-        response.status(201).json(result);
+        response.status(201).json(chatDTO);
       } else {
         throw new Error("Missing request data");
       }
@@ -210,13 +243,17 @@ export default class ChatController {
     response: Response,
     next: NextFunction,
   ): Promise<void> {
-    const id: string | undefined = request.params.id;
+    const userId: string | undefined = request.params.userId;
+    const chatId: string | undefined = request.params.chatId;
     const body: MessageObj | undefined = request.body;
     const auth: string | undefined = request.header("Authorization");
 
     try {
-      if (id && body && auth) {
-        const validation: any = await authService.validateAccessToken(id, auth);
+      if (userId && chatId && body && auth) {
+        const validation: any = await authService.validateAccessToken(
+          userId,
+          auth,
+        );
 
         if (validation.status !== 200 && validation.status !== 204) {
           throw new Error("Invalid token");
@@ -225,8 +262,15 @@ export default class ChatController {
           return;
         }
 
+        const message: MessageObj = {
+          sender: new mongoose.Types.ObjectId(userId),
+          message: body.message,
+        } as MessageObj;
+
         database.createTransaction();
-        await model.findByIdAndUpdate(id, { $push: { conversation: body } });
+        await model.findByIdAndUpdate(chatId, {
+          $push: { conversation: message },
+        });
 
         database.commitTransaction();
         response.status(204).end();

@@ -1,5 +1,5 @@
 import { type NextFunction, type Request, type Response } from "express";
-import { type UserObj } from "../types/Ambient";
+import { TokenObj, type UserObj } from "../types/Ambient";
 import model from "../models/UserModel";
 import _ from "lodash";
 import Database from "../config/Database";
@@ -7,6 +7,8 @@ import Encipher from "../encryptation/Encipher";
 import Helper from "../utils/Helper";
 import AuthorizationService from "../services/AuthorizationService";
 import UserService from "../services/UserService";
+import UserDTO from "../dtos/UserDTO";
+import TokenDTO from "../dtos/TokenDTO";
 
 /** Dependencies */
 const database: Database = new Database();
@@ -35,7 +37,20 @@ export default class UserController {
   ): Promise<void> {
     try {
       const result: UserObj[] = await model.find();
-      response.status(200).json(result);
+
+      const usersList: UserObj[] = [];
+      result.forEach((user) => {
+        usersList.push(
+          UserDTO.builder()
+            .setId(user.id!)
+            .setUsername(user.username)
+            .setPassword(user.password)
+            .setEmail(user.email)
+            .build(),
+        );
+      });
+
+      response.status(200).json(usersList!);
     } catch (error) {
       next(error);
     }
@@ -59,7 +74,17 @@ export default class UserController {
     try {
       if (id) {
         const result: UserObj | null = await model.findById(id);
-        response.status(200).json(result);
+        if (!result) {
+          throw new Error("User not found");
+        }
+
+        const user: UserObj = UserDTO.builder()
+          .setId(result.id!)
+          .setUsername(result.username)
+          .setPassword(result.password)
+          .setEmail(result.email);
+
+        response.status(200).json(user);
       } else {
         throw new Error("Missing request data");
       }
@@ -84,7 +109,54 @@ export default class UserController {
     const email: string | undefined = request.params.email;
     try {
       const result: UserObj | null = await model.findOne({ email: email });
-      response.status(200).json(result);
+      if (!result) {
+        throw new Error("User not found");
+      }
+
+      const user: UserObj = UserDTO.builder()
+        .setId(result.id!)
+        .setUsername(result.username)
+        .setPassword(result.password)
+        .setEmail(result.email);
+
+      response.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Fetch user with token to auth logic.
+   *
+   * @async
+   * @param request App request handler.
+   * @param response App response handler.
+   * @param next Express App function.
+   */
+  public async findToAuth(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const id: string | undefined = request.params.id;
+
+    try {
+      if (id) {
+        const result: UserObj | null = await model.findById(id);
+        if (!result) {
+          throw new Error("User not found");
+        }
+
+        const token: TokenObj = TokenDTO.builder()
+          .setToken(result.token!)
+          .build();
+
+        console.log(token);
+        
+        response.status(200).json(token);
+      } else {
+        throw new Error("Missing request data");
+      }
     } catch (error) {
       next(error);
     }
@@ -116,8 +188,14 @@ export default class UserController {
         });
         const result: UserObj = await user.save();
 
+        const userDTO: UserObj = UserDTO.builder()
+          .setId(result.id!)
+          .setUsername(result.username)
+          .setPassword(result.password)
+          .setEmail(result.email);
+
         database.commitTransaction();
-        response.status(201).json(result);
+        response.status(201).json(userDTO);
       } else {
         throw new Error("Missing request data");
       }

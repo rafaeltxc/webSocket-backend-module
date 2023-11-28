@@ -1,4 +1,4 @@
-import { type Schema } from "mongoose";
+import { type Mongoose } from "mongoose";
 
 /**
  * User main interface.
@@ -6,7 +6,7 @@ import { type Schema } from "mongoose";
  * @interface
  */
 interface UserObj {
-  id?: Schema.Types.ObjectId;
+  id?: mongoose.Types.ObjectId;
   username: string;
   password: string;
   email: string;
@@ -25,7 +25,7 @@ interface UserObj {
 interface ChatObj {
   id?: Schema.Types.ObjectId;
   participants: Schema.Types.ObjectId[];
-  conversation: MessageObj[] | []
+  conversation: MessageObj[] | [];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -40,6 +40,10 @@ interface MessageObj {
   datetime: Date;
   sender: Schema.Types.ObjectId;
   message: string;
+}
+
+interface TokenObj {
+  token: string;
 }
 
 /**

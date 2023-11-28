@@ -31,6 +31,6 @@ export default class ChatRoutes {
     this.router.post("/:id", this.controller.createOne);
     this.router.put("/:userId/:chatId", this.controller.updateOne);
     this.router.delete("/:userId/:chatId", this.controller.deleteOne);
-    this.router.put("/:userId/:chatId/addMessage", this.controller.addMessage);
+    this.router.put("/add-message/:userId/:chatId", this.controller.addMessage);
   }
 }

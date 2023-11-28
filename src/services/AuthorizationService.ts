@@ -55,7 +55,7 @@ export default class AuthorizationService {
   public async userValidation(id: string): Promise<boolean> {
     try {
       const response: Response = await fetch(
-        `http://localhost:8080/user/${id}`,
+        `http://localhost:8080/user/token/${id}`,
         {
           method: "GET",
           headers: {
@@ -65,6 +65,7 @@ export default class AuthorizationService {
       );
 
       const data: UserObj = await response.json();
+      
       const validated: string | JwtPayload = jwt.verify(data.token!, this.key, {
         maxAge: "7d",
       });

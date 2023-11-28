@@ -1,4 +1,4 @@
-import { type Schema } from "mongoose";
+import { Schema } from "mongoose";
 import { type MessageObj, type ChatObj } from "../types/Ambient";
 
 /**
@@ -7,6 +7,7 @@ import { type MessageObj, type ChatObj } from "../types/Ambient";
  * @class
  */
 export default class ChatDTO implements ChatObj {
+  public id: Schema.Types.ObjectId;
   public participants: Schema.Types.ObjectId[];
   public conversation: MessageObj[] | [];
 
@@ -16,6 +17,7 @@ export default class ChatDTO implements ChatObj {
    * @constructor
    */
   private constructor() {
+    this.id = new Schema.Types.ObjectId("");
     this.participants = [];
     this.conversation = [];
   }
@@ -27,6 +29,11 @@ export default class ChatDTO implements ChatObj {
    */
   public static builder(): ChatDTO {
     return new ChatDTO();
+  }
+
+  public setId(id: Schema.Types.ObjectId): ChatDTO {
+    this.id = id;
+    return this;
   }
 
   /**

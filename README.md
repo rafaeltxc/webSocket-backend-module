@@ -1,13 +1,40 @@
-# Chat application
+# WebSocket protocol implementation
 
-### On going NodeJS project being built concurrently with [Search-Engine](https://github.com/rafaeltxc/Search-Engine/tree/main). It will consist in a WhatsApp like Chat Application.
+### Overview
+On going TypeScript Back-End api to be used as a chat application. Being built concurrently with [web-crawler](https://github.com/rafaeltxc/web-crawler/tree/main). Back-end module for [webSocket-frontend-module](https://github.com/rafaeltxc/webSocket-frontend-module).
 
-### About
-The project uses React with JavaScript for the front-end and Node with Typescript for the back-end.
-It will have the implementation of public rooms that users can join anonymously, or with their own accounts after the authentication, or in the same way, private rooms for only two or more users.
- 
-### This Readme will be altered as the project progresses.
+### Features
+The TypeScript back-end is designed to support various chat functionalities, including:
+ - Public Rooms: Users can join anonymously or with authenticated accounts.
+ - Private Rooms: Exclusive spaces for two or more logged users.
+    
+### Configuration
+Before running the application, create a new .env file in the root directory and populate it with the following properties:
+```console
+PORT=number                // Port that the Back-End will run.
+ENCRYPTION_KEY=string      // Key to handle encryptation.
+AUTHORIZATION_KEY=string   // Key to handle token creation.
+URL=string                 // MongoDB URL.
+MONGO_NAME=string          // MondoDB database name.
+MONGO_USER=string          // MongoDB user to login.
+MONGO_PASS=string          // MongoDB password to login.
+```
 
-## What is done:
- - Front-End (UI and Styling, the logic will be done after the Back-End is complete, and it will be refactored to TypeScript).
- - API for DataBase connection (On going...).
+### Usage
+Clone the repository:
+```console
+git clone https://github.com/rafaeltxc/webSocket-backend-module
+cd ./webSocket-backend-module
+```
+
+Install the dependencies:
+```console
+npm install 
+```
+
+Start the application:
+```console
+npm start 
+```
+
+The application should initiate without any issues on the configured port.

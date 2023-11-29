@@ -14,7 +14,6 @@ import {
 export default class Database {
   /** Properties */
   private URL: string | undefined = process.env.URL;
-  private MONGO_PORT: string | undefined = process.env.MONGO_PORT;
   private MONGO_NAME: string | undefined = process.env.MONGO_NAME;
   private MONGO_USER: string | undefined = process.env.MONGO_USER;
   private MONGO_PASS: string | undefined = process.env.MONGO_PASS;
@@ -49,7 +48,7 @@ export default class Database {
    * @returns New server connection.
    */
   public connect(): Promise<Mongoose> {
-    return connect(`${this.URL}${this.MONGO_PORT}`, {
+    return connect(`${this.URL}`, {
       dbName: this.MONGO_NAME,
       user: this.MONGO_USER,
       pass: this.MONGO_PASS,

@@ -1,5 +1,5 @@
 import { type NextFunction, type Request, type Response } from "express";
-import { TokenObj, type UserObj } from "../types/Ambient";
+import { type UserObj } from "../types/Ambient";
 import model from "../models/UserModel";
 import _ from "lodash";
 import Database from "../config/Database";
@@ -8,7 +8,6 @@ import Helper from "../utils/Helper";
 import AuthorizationService from "../services/AuthorizationService";
 import UserService from "../services/UserService";
 import UserDTO from "../dtos/UserDTO";
-import TokenDTO from "../dtos/TokenDTO";
 
 /** Dependencies */
 const database: Database = new Database();
@@ -82,7 +81,8 @@ export default class UserController {
           .setId(result.id!)
           .setUsername(result.username)
           .setPassword(result.password)
-          .setEmail(result.email);
+          .setEmail(result.email)
+          .build();
 
         response.status(200).json(user);
       } else {
@@ -117,46 +117,10 @@ export default class UserController {
         .setId(result.id!)
         .setUsername(result.username)
         .setPassword(result.password)
-        .setEmail(result.email);
+        .setEmail(result.email)
+        .build();
 
       response.status(200).json(user);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Fetch user with token to auth logic.
-   *
-   * @async
-   * @param request App request handler.
-   * @param response App response handler.
-   * @param next Express App function.
-   */
-  public async findToAuth(
-    request: Request,
-    response: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const id: string | undefined = request.params.id;
-
-    try {
-      if (id) {
-        const result: UserObj | null = await model.findById(id);
-        if (!result) {
-          throw new Error("User not found");
-        }
-
-        const token: TokenObj = TokenDTO.builder()
-          .setToken(result.token!)
-          .build();
-
-        console.log(token);
-
-        response.status(200).json(token);
-      } else {
-        throw new Error("Missing request data");
-      }
     } catch (error) {
       next(error);
     }
@@ -225,13 +189,9 @@ export default class UserController {
 
     try {
       if (id && body && auth) {
-        const validation: any = await authService.validateAccessToken(id, auth);
-
-        if (validation.status !== 200 && validation.status !== 204) {
-          throw new Error("Invalid token");
-        } else if (validation.status === 200) {
-          response.status(401).json(await validation.json());
-          return;
+        const tokenValidation = await authService.validateToken(id, auth);
+        if (!tokenValidation) {
+          throw new Error("Invalid token")
         }
 
         database.createTransaction();
@@ -244,45 +204,6 @@ export default class UserController {
       }
     } catch (error) {
       database.abortTransaction();
-      next(error);
-    }
-  }
-
-  /**
-   * Update user pesisted token.
-   *
-   * @async
-   * @param request App request handler.
-   * @param response App response handler.
-   * @param next Express App function.
-   */
-  public async updateToken(
-    request: Request,
-    response: Response,
-    next: NextFunction,
-  ) {
-    const id: string | undefined = request.params.id;
-    const body: UserObj | undefined = request.body;
-
-    try {
-      if (id && body) {
-        const verify: boolean = await userService.validatePassword(
-          id,
-          body.password,
-        );
-        if (!verify) {
-          throw new Error("Wrong password");
-        }
-
-        database.createTransaction();
-        await model.findByIdAndUpdate(id, { token: body.token });
-
-        database.commitTransaction();
-        response.status(204).end();
-      } else {
-        throw new Error("Missing request data");
-      }
-    } catch (error) {
       next(error);
     }
   }
@@ -306,13 +227,9 @@ export default class UserController {
 
     try {
       if (id && newPass && auth) {
-        const validation: any = await authService.validateAccessToken(id, auth);
-
-        if (validation.status !== 200 && validation.status !== 204) {
-          throw new Error("Invalid token");
-        } else if (validation.status === 200) {
-          response.status(401).json(await validation.json());
-          return;
+        const tokenValidation = await authService.validateToken(id, auth);
+        if (!tokenValidation) {
+          throw new Error("Invalid token")
         }
 
         const hashedPassword = await userService.equalPasswords(id, newPass);
@@ -348,13 +265,9 @@ export default class UserController {
 
     try {
       if (id && auth) {
-        const validation: any = await authService.validateAccessToken(id, auth);
-
-        if (validation.status !== 200 && validation.status !== 204) {
-          throw new Error("Invalid token");
-        } else if (validation.status === 200) {
-          response.status(401).json(await validation.json());
-          return;
+        const tokenValidation = await authService.validateToken(id, auth);
+        if (!tokenValidation) {
+          throw new Error("Invalid token")
         }
 
         database.createTransaction();

@@ -109,13 +109,9 @@ export default class ChatController {
 
     try {
       if (id && body && auth) {
-        const validation: any = await authService.validateAccessToken(id, auth);
-
-        if (validation.status !== 200 && validation.status !== 204) {
-          throw new Error("Invalid token");
-        } else if (validation.status === 200) {
-          response.status(401).json(await validation.json());
-          return;
+        const tokenValidation = await authService.validateToken(id, auth);
+        if (!tokenValidation) {
+          throw new Error("Invalid token")
         }
 
         database.createTransaction();
@@ -159,16 +155,9 @@ export default class ChatController {
 
     try {
       if (userId && chatId && body && auth) {
-        const validation: any = await authService.validateAccessToken(
-          userId,
-          auth,
-        );
-
-        if (validation.status !== 200 && validation.status !== 204) {
-          throw new Error("Invalid token");
-        } else if (validation.status === 200) {
-          response.status(401).json(await validation.json());
-          return;
+        const tokenValidation = await authService.validateToken(userId, auth);
+        if (!tokenValidation) {
+          throw new Error("Invalid token")
         }
 
         database.createTransaction();
@@ -204,16 +193,9 @@ export default class ChatController {
 
     try {
       if (userId && chatId && auth) {
-        const validation: any = await authService.validateAccessToken(
-          userId,
-          auth,
-        );
-
-        if (validation.status !== 200 && validation.status !== 204) {
-          throw new Error("Invalid token");
-        } else if (validation.status === 200) {
-          response.status(401).json(await validation.json());
-          return;
+        const tokenValidation = await authService.validateToken(userId, auth);
+        if (!tokenValidation) {
+          throw new Error("Invalid token")
         }
 
         database.createTransaction();
@@ -250,16 +232,9 @@ export default class ChatController {
 
     try {
       if (userId && chatId && body && auth) {
-        const validation: any = await authService.validateAccessToken(
-          userId,
-          auth,
-        );
-
-        if (validation.status !== 200 && validation.status !== 204) {
-          throw new Error("Invalid token");
-        } else if (validation.status === 200) {
-          response.status(401).json(await validation.json());
-          return;
+        const tokenValidation = await authService.validateToken(userId, auth);
+        if (!tokenValidation) {
+          throw new Error("Invalid token")
         }
 
         const message: MessageObj = {

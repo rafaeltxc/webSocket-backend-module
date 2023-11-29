@@ -32,7 +32,6 @@ export default class AppMiddlewares {
         response.status(403).json(errors.MissingData(error.message));
         break;
       default:
-        console.log(error.name);
         response.status(500).json(errors.Default(error.message));
         break;
     }

@@ -1,6 +1,9 @@
 import { UserObj } from "../types/Ambient";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import model from "../models/UserModel";
 import _ from "lodash";
+import Encipher from "../encryptation/Encipher";
+import Helper from "../utils/Helper";
 
 /**
  * Authorization service class.
@@ -11,6 +14,10 @@ export default class AuthorizationService {
   /** Properties */
   private key: string;
 
+  /** Dependencies */
+  private encipher: Encipher;
+  private helper: Helper;
+
   /**
    * Class constructor
    *
@@ -18,31 +25,8 @@ export default class AuthorizationService {
    */
   constructor() {
     this.key = process.env.AUTHORIZATION_KEY!;
-  }
-
-  /**
-   * Check if access token is still valid.
-   *
-   * @async
-   * @param {string} id - User id.
-   * @param {string} token - Request given token.
-   * @returns {Response} Http response with received request data.
-   */
-  public async validateAccessToken(
-    id: string,
-    token: string,
-  ): Promise<Response> {
-    try {
-      return await fetch(`http://localhost:8080/auth/access/verify/${id}`, {
-        method: "POST",
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (error) {
-      throw error;
-    }
+    this.encipher = new Encipher();
+    this.helper = new Helper();
   }
 
   /**
@@ -53,53 +37,71 @@ export default class AuthorizationService {
    * @returns {boolean} Saved token is valid or not.
    */
   public async userValidation(id: string): Promise<boolean> {
-    try {
-      const response: Response = await fetch(
-        `http://localhost:8080/user/token/${id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      const data: UserObj = await response.json();
-
-      const validated: string | JwtPayload = jwt.verify(data.token!, this.key);
-
-      if (validated) {
-        return true;
-      }
-      return false;
-    } catch (error) {
-      throw error;
+    const user: UserObj | null = await model.findById(id);
+    if (!user) {
+      throw new Error("User not found");
     }
+
+    const validated: string | JwtPayload = jwt.verify(user.token!, this.key);
+    if (validated) {
+      return true;
+    }
+    return false;
+  }
+
+  public async updateToken(
+    id: string,
+    token: string,
+    pass: string,
+  ): Promise<void> {
+    const user: UserObj | null = await model.findById(id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const validation: boolean = await this.encipher.validateData(
+      pass,
+      user.password,
+    );
+    if (!validation) {
+      throw new Error("Wrong password");
+    }
+
+    await model.findByIdAndUpdate(id, { token });
   }
 
   /**
-   * Generates new accessToken.
+   * Validate access token.
    *
    * @async
-   * @param {string} id - User id.
-   * @returns {string} Retrieved accessToken.
+   * @param request App request handler.
+   * @param response App response handler.
+   * @param next Express App function.
    */
-  public async accessToken(id: string): Promise<string> {
-    try {
-      const response: Response = await fetch(
-        `http://localhost:8080/auth/sign/access-token/${id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+  public async validateToken(id: string, receivedToken: string): Promise<boolean> {
+    const token: string = this.helper.formatToken(receivedToken);
 
-      const token: string = await response.json();
-      return token;
-    } catch (error) {
-      throw error;
+    const user: UserObj | null = await model.findById(id);
+    if (!user) {
+      throw new Error("User not found");
     }
+
+    const decoded: JwtPayload | null = jwt.decode(token, {
+      complete: true,
+      json: true,
+    });
+
+    const tokenId: string | undefined = decoded?.payload?.id;
+    if (id !== tokenId) {
+      throw new Error("Invalid user token");
+    }
+
+    const validated: string | JwtPayload = jwt.verify(token, this.key, {
+      maxAge: "1h",
+    });
+    if (!validated) {
+      return false;
+    }
+    return true;
   }
 }

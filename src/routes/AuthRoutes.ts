@@ -26,8 +26,7 @@ export default class AuthRoutes {
    * Set all the authorization routes.
    */
   private initializeRoutes() {
-    this.router.post("/sign/access-token/:id", this.controller.accessToken);
-    this.router.post("/sign/user-token/:id", this.controller.userToken);
-    this.router.post("/access/verify/:id", this.controller.validateAccessToken);
+    this.router.post("/access-token/:id", this.controller.accessToken);
+    this.router.post("/sign-in/:id", this.controller.login);
   }
 }

@@ -1,15 +1,15 @@
 import { type NextFunction, type Request, type Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import AuthorizationService from "../services/AuthorizationService";
-import UserService from "../services/UserService";
 import Helper from "../utils/Helper";
+import TokenDTO from "../dtos/TokenDTO";
+import { TokenObj } from "../types/Ambient";
 
 /** Properties */
 const key: string = process.env.AUTHORIZATION_KEY!;
 
 /** Dependencies */
 const authorizationService: AuthorizationService = new AuthorizationService();
-const userService: UserService = new UserService();
 const helper: Helper = new Helper();
 
 /**
@@ -47,7 +47,10 @@ export default class AuthController {
         });
 
         const newToken: string = helper.concatWithSpaces("Bearer", signed);
-        response.status(200).json(newToken);
+
+        const token: TokenObj = TokenDTO.builder().setToken(newToken).build();
+
+        response.status(200).json(token);
       } else {
         throw new Error("Missing request data");
       }
@@ -64,7 +67,7 @@ export default class AuthController {
    * @param response App response handler.
    * @param next Express App function.
    */
-  public async userToken(
+  public async login(
     request: Request,
     response: Response,
     next: NextFunction,
@@ -78,70 +81,16 @@ export default class AuthController {
           algorithm: "HS256",
         });
 
-        await userService.updateToken(id, newToken, password);
-        const accessToken: string = await authorizationService.accessToken(id);
-
-        response.status(200).json(accessToken);
-      } else {
-        throw new Error("Missing request data");
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Validate access token.
-   *
-   * @async
-   * @param request App request handler.
-   * @param response App response handler.
-   * @param next Express App function.
-   */
-  public async validateAccessToken(
-    request: Request,
-    response: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    const id: string | undefined = request.params.id;
-    const receivedToken: string | undefined = request.header("Authorization");
-
-    try {
-      if (id && receivedToken) {
-        const token: string = helper.formatToken(receivedToken);
-        const decoded: JwtPayload | null = jwt.decode(token, {
-          complete: true,
-          json: true,
+        await authorizationService.updateToken(id, newToken, password);
+        const accessToken: string = jwt.sign({ id }, key, {
+          algorithm: "HS256",
+          expiresIn: "1h",
         });
 
-        const tokenId: string | undefined = decoded?.payload?.id;
-        if (id !== tokenId) {
-          throw new Error("Invalid token");
-        }
+        const token: string = helper.concatWithSpaces("Bearer", newToken);
+        const tokenDTO: TokenObj = TokenDTO.builder().setToken(token).build();
 
-        const tokenExp: string | undefined = decoded?.payload?.exp;
-        const validateDate: boolean = helper.checkExpiredTime(
-          parseInt(tokenExp!),
-        );
-        if (!validateDate) {
-          const userAuth: boolean =
-            await authorizationService.userValidation(id);
-          if (!userAuth) {
-            throw new Error("Invalid user token");
-          }
-
-          const newToken: string = await authorizationService.accessToken(id);
-          response.status(200).json(newToken);
-          return;
-        }
-
-        const validated: string | JwtPayload = jwt.verify(token, key, {
-          maxAge: "1h",
-        });
-        if (!validated) {
-          throw new Error("Invalid access token");
-        }
-        response.status(204).end();
+        response.status(200).json(tokenDTO);
       } else {
         throw new Error("Missing request data");
       }

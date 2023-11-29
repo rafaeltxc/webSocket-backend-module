@@ -49,6 +49,13 @@ export default class AuthorizationService {
     return false;
   }
 
+/**
+   * Update user token in the database after password validation.
+   *
+   * @param {string} id - User id.
+   * @param {string} token - Token to be stored.
+   * @param {string} pass - User password.
+   */
   public async updateToken(
     id: string,
     token: string,

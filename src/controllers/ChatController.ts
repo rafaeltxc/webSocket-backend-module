@@ -111,7 +111,7 @@ export default class ChatController {
       if (id && body && auth) {
         const tokenValidation = await authService.validateToken(id, auth);
         if (!tokenValidation) {
-          throw new Error("Invalid token")
+          throw new Error("Invalid token");
         }
 
         database.createTransaction();
@@ -157,7 +157,7 @@ export default class ChatController {
       if (userId && chatId && body && auth) {
         const tokenValidation = await authService.validateToken(userId, auth);
         if (!tokenValidation) {
-          throw new Error("Invalid token")
+          throw new Error("Invalid token");
         }
 
         database.createTransaction();
@@ -195,7 +195,7 @@ export default class ChatController {
       if (userId && chatId && auth) {
         const tokenValidation = await authService.validateToken(userId, auth);
         if (!tokenValidation) {
-          throw new Error("Invalid token")
+          throw new Error("Invalid token");
         }
 
         database.createTransaction();
@@ -234,17 +234,12 @@ export default class ChatController {
       if (userId && chatId && body && auth) {
         const tokenValidation = await authService.validateToken(userId, auth);
         if (!tokenValidation) {
-          throw new Error("Invalid token")
+          throw new Error("Invalid token");
         }
-
-        const message: MessageObj = {
-          sender: new mongoose.Types.ObjectId(userId),
-          message: body.message,
-        } as MessageObj;
 
         database.createTransaction();
         await model.findByIdAndUpdate(chatId, {
-          $push: { conversation: message },
+          $push: { conversation: { sender: userId, message: body.message } },
         });
 
         database.commitTransaction();

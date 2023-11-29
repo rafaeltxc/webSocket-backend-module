@@ -3,6 +3,8 @@ import { ChatObj, MessageObj, UserObj } from "../../types/Ambient";
 import App from "../../config/App";
 import userModel from "../../models/UserModel";
 import chatModel from "../../models/ChatModel";
+import Helper from "../../utils/Helper";
+import jwt from "jsonwebtoken";
 import express from "express";
 import mongoose from "mongoose";
 import chaiHttp from "chai-http";
@@ -18,32 +20,25 @@ describe("Chat tests", () => {
   let userId1: mongoose.Schema.Types.ObjectId;
   let userId2: mongoose.Schema.Types.ObjectId;
   let chatId: mongoose.Schema.Types.ObjectId;
+  let token: string;
   const userObjs: UserObj[] = [
     {
       username: "test",
       password: "test",
       email: "test@email.com",
-      contacts: [],
-      picture: null,
-      token: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     },
     {
       username: "test",
       password: "test",
       email: "test2@email.com",
-      contacts: [],
-      picture: null,
-      token: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     },
   ];
+  const key: string = process.env.AUTHORIZATION_KEY!;
 
   /** Dependencies */
   const server: App = new App(express());
   const app = server.app;
+  const helper: Helper = new Helper();
 
   /**
    * Before tests, initiate local memory Mongoose server.
@@ -69,16 +64,19 @@ describe("Chat tests", () => {
     userId1 = user[0].id;
     userId2 = user[1].id;
 
+    const newToken = jwt.sign({ id: userId1 }, key, {
+      expiresIn: "10s",
+    });
+
     const chatObj: ChatObj = {
       participants: [userId1, userId2],
       conversation: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     const newChat = new chatModel(chatObj);
     const result = await newChat.save();
     chatId = result.id;
+    token = helper.concatWithSpaces("Bearer", newToken);
   });
 
   /**
@@ -118,12 +116,16 @@ describe("Chat tests", () => {
    *
    * @async
    */
-  it("Should post a new user", async () => {
+  it("Should post a new chat", async () => {
     const newChat: Object = {
       participants: [userId1, userId2],
     };
 
-    const result = await chai.request(app).post("/chat").send(newChat);
+    const result = await chai
+      .request(app)
+      .post(`/chat/${userId1}`)
+      .set("Authorization", token)
+      .send(newChat);
 
     expect(result).to.have.status(201);
     expect(result.body).to.be.an("object");
@@ -139,7 +141,11 @@ describe("Chat tests", () => {
       participants: [userId1, userId2],
     };
 
-    const result = await chai.request(app).put(`/chat/${chatId}`).send(newChat);
+    const result = await chai
+      .request(app)
+      .put(`/chat/${userId1}/${chatId}`)
+      .set("Authorization", token)
+      .send(newChat);
 
     expect(result).to.have.status(204);
   });
@@ -150,7 +156,10 @@ describe("Chat tests", () => {
    * @async
    */
   it("Should return status code 204 for user deletion", async () => {
-    const result = await chai.request(app).delete(`/chat/${chatId}`);
+    const result = await chai
+      .request(app)
+      .delete(`/chat/${userId1}/${chatId}`)
+      .set("Authorization", token);
 
     expect(result).to.have.status(204);
   });
@@ -164,15 +173,15 @@ describe("Chat tests", () => {
     const newMessage: MessageObj = {
       sender: userId1,
       message: "test",
-      datetime: new Date(),
     };
 
     const result = await chai
       .request(app)
-      .put(`/chat/${chatId}/addMessage`)
+      .put(`/chat/add-message/${userId1}/${chatId}`)
+      .set("Authorization", token)
       .send(newMessage);
 
-    expect(result).to.have.status(201);
+    expect(result).to.have.status(204);
     expect(result.body).to.be.an("object");
   });
 });

@@ -2,10 +2,12 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { UserObj } from "../../types/Ambient";
 import App from "../../config/App";
 import model from "../../models/UserModel";
+import Helper from "../../utils/Helper";
 import express from "express";
 import mongoose from "mongoose";
 import chaiHttp from "chai-http";
 import chai, { expect } from "chai";
+import jwt from "jsonwebtoken";
 
 /**
  * User tests class.
@@ -20,21 +22,18 @@ describe("User tests", () => {
     username: "test",
     password: "test",
     email: "test@email.com",
-    contacts: [],
-    picture: null,
-    token: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
   };
   const newUser: Object = {
     username: "test",
     password: "test",
     email: "test2@email.com",
   };
+  const key: string = process.env.AUTHORIZATION_KEY!;
 
   /** Dependencies */
   const server: App = new App(express());
   const app = server.app;
+  const helper: Helper = new Helper();
 
   /**
    * Before tests, initiate local memory Mongoose server.
@@ -59,18 +58,12 @@ describe("User tests", () => {
     const newUser = new model(userObj);
     const user = await newUser.save();
 
-    userId = user.id;
+    const newToken = jwt.sign({ id: user.id }, key, {
+      expiresIn: "10s",
+    });
 
-    chai
-      .request(app)
-      .post(`/auth/sign/user-token/${userId}`)
-      .set("Content-Type", "application/json")
-      .send({ password: userObj.password })
-      .end((err, res) => {
-        console.log(res);
-        
-        token = res.body.data.token;
-      });
+    userId = user.id;
+    token = helper.concatWithSpaces("Bearer", newToken);
   });
 
   /**
@@ -137,7 +130,11 @@ describe("User tests", () => {
    * @async
    */
   it("Should return status code 204 for user update", async () => {
-    const result = await chai.request(app).put(`/user/${userId}`).send(newUser);
+    const result = await chai
+      .request(app)
+      .put(`/user/${userId}`)
+      .set("Authorization", token)
+      .send(newUser);
 
     expect(result).to.have.status(204);
   });
@@ -148,7 +145,10 @@ describe("User tests", () => {
    * @async
    */
   it("Should return status code 204 for user deletion", async () => {
-    const result = await chai.request(app).delete(`/user/${userId}`);
+    const result = await chai
+      .request(app)
+      .delete(`/user/${userId}`)
+      .set("Authorization", token);
 
     expect(result).to.have.status(204);
   });

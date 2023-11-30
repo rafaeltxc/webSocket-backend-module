@@ -1,0 +1,32 @@
+name: "Testing Workflow"
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  application:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: action/setup-node@v3
+        with:
+          node-version: 21.2.0
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Tests
+        run: npm test
+        env:
+          AUTHORIZATION_KEY: ${{secrets.AUTHORIZATION_KEY}}

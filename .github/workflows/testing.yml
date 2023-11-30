@@ -31,4 +31,5 @@ jobs:
       - name: Tests
         run: yarn test
         env:
-          AUTHORIZATION_KEY: ${{secrets.AUTHORIZATION_KEY}}
+          AUTHORIZATION_KEY: ${{ secrets.AUTHORIZATION_KEY }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}

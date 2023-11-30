@@ -23,12 +23,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 21.2.0
-          cache: npm
+          cache: yarn
 
       - name: Install
-        run: npm ci
+        run: yarn install
 
       - name: Tests
-        run: npm test
+        run: yarn test
         env:
           AUTHORIZATION_KEY: ${{secrets.AUTHORIZATION_KEY}}

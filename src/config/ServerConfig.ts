@@ -1,7 +1,7 @@
 import Database from "./Database";
-import { Server } from "node:http";
+import { type Server } from "node:http";
 
-export default class Server {
+export default class ServerConfig {
   /** Properties */
   private PORT: number | undefined;
 

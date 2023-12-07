@@ -1,9 +1,19 @@
-import ws from "ws"
+import ws from "ws";
 
 export default class WebSocket {
-  private WebSocket: ws | null
+  /** Properties */
+  private WebSocket: ws | null;
 
-  constructor() {
-    this.WebSocket = null
+  /**
+   * Class constructor
+   */
+  constructor(ws: ws) {
+    this.WebSocket = ws;
+  }
+
+  public config(): void {
+    this.WebSocket?.on("open", (ws: ws) => {});
+    this.WebSocket?.on("close", (ws: ws) => {});
+    this.WebSocket?.on("message", (ws: ws) => {});
   }
 }

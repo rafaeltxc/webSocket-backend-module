@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "module": "commonjs",
-  "main": "src/config/Server.ts",
+  "main": "src/Index.ts",
   "scripts": {
-    "dev": "nodemon --watch \"src/**\" --ext \"ts\" --exec \"ts-node src/config/Server.ts\"",
-    "start": "ts-node src/config/Server.ts",
+    "dev": "nodemon --watch \"src/**\" --ext \"ts\" --exec \"ts-node src/Index.ts\"",
+    "start": "ts-node src/Index.ts",
     "test": "mocha --require ts-node/register ./src/tests/**/*.spec.ts --timeout 10000 --exit",
     "test:watch": "npm test -- --watch",
     "build": "tsc",

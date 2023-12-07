@@ -1,6 +1,6 @@
 import "dotenv/config";
 import http, { type Server } from "node:http";
-import ServerConfig from "./config/Server";
+import ServerConfig from "./config/ServerConfig";
 import { WebSocketServer } from "ws";
 import express from "express"
 import App from "./config/App";

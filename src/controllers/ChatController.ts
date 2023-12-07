@@ -5,7 +5,6 @@ import _ from "lodash";
 import Database from "../config/Database";
 import AuthorizationService from "../services/AuthorizationService";
 import ChatDTO from "../dtos/ChatDTO";
-import mongoose from "mongoose";
 
 /** Dependencies */
 const database = new Database();

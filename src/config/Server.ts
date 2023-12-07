@@ -1,46 +1,55 @@
-import "dotenv/config";
-import express from "express";
-import App from "./App";
 import Database from "./Database";
+import { Server } from "node:http";
 
-/** Properties */
-const PORT: number | undefined = process.env.PORT
-  ? parseInt(process.env.PORT, 10)
-  : undefined;
+export default class Server {
+  /** Properties */
+  private PORT: number | undefined;
 
-/** Dependencies */
-const mongodb: Database = new Database();
-export const server: App = new App(express());
+  /** Dependencies */
+  private mongodb: Database;
 
-/**
- * Start Express server listening at specified port.
- */
-const listeningServer = server.app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+  constructor() {
+    this.PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : undefined;
+    this.mongodb = new Database();
+  }
 
-/**
- * Server on listening configuration.
- */
-listeningServer.on("listening", async () => {
-  try {
-    await mongodb.connect();
-    console.log("Connection with the Database established");
-  } catch (error) {
-    console.error({
-      Message: "Connection with the Database could not be established",
-      Error: error,
+  /*
+   * Set server on listening configuration.
+   */
+  public config(server: Server): void {
+    /** 
+     * Server on listening configuration.
+     */ 
+    server.on("listening", async () => {
+      try {
+        await this.mongodb.connect();
+        console.log("Connection with the Database established");
+      } catch (error) {
+        console.error({
+          Message: "Connection with the Database could not be established",
+          Error: error,
+        });
+      }
+    });
+
+    /**
+     * Server on error configuration.
+     */
+    server.on("error", (error: any) => {
+      if (error.code === "EADDRINUSE") {
+        console.log("Server could no be loaded, adresses already in use");
+      } else {
+        console.error(error);
+      }
     });
   }
-});
 
-/**
- * Server on error configuration.
- */
-listeningServer.on("error", (error: any) => {
-  if (error.code === "EADDRINUSE") {
-    console.log("Server could no be loaded, adresses already in use");
-  } else {
-    console.error(error);
+  /**
+   * Start Express server listening at specified port.
+   */
+  public listen(server: Server): Server {
+    return server.listen(this.PORT, () => {
+      console.log(`Server listening on port ${this.PORT}`);
+    });
   }
-});
+}

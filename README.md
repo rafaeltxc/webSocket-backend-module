@@ -1,7 +1,7 @@
 # WebSocket protocol implementation
 
 ### Overview
-On going TypeScript Back-End api to be used as a chat application. Being built concurrently with [web-crawler](https://github.com/rafaeltxc/web-crawler/tree/main). Back-end module for [webSocket-frontend-module](https://github.com/rafaeltxc/webSocket-frontend-module).
+On going TypeScript Back-End api to be used within a chat application. Being built concurrently with [webSocket-frontend-module](https://github.com/rafaeltxc/webSocket-frontend-module).
 
 ### Features
 The TypeScript back-end is designed to support various chat functionalities, including:

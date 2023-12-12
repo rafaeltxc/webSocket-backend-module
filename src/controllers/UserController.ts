@@ -1,7 +1,6 @@
 import { type NextFunction, type Request, type Response } from "express";
 import { type UserObj } from "../types/Ambient";
-import model from "../models/UserModel";
-import _ from "lodash";
+import Model from "../models/UserModel";
 import Database from "../config/Database";
 import Encipher from "../encryptation/Encipher";
 import Helper from "../utils/Helper";
@@ -32,10 +31,10 @@ export default class UserController {
   public async findAll(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     try {
-      const result: UserObj[] = await model.find();
+      const result: UserObj[] = await Model.find();
 
       const usersList: UserObj[] = [];
       result.forEach((user) => {
@@ -45,11 +44,11 @@ export default class UserController {
             .setUsername(user.username)
             .setPassword(user.password)
             .setEmail(user.email)
-            .build(),
+            .build()
         );
       });
 
-      response.status(200).json(usersList!);
+      response.status(200).json(usersList);
     } catch (error) {
       next(error);
     }
@@ -66,13 +65,13 @@ export default class UserController {
   public async findById(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
 
     try {
       if (id) {
-        const result: UserObj | null = await model.findById(id);
+        const result: UserObj | null = await Model.findById(id);
         if (!result) {
           throw new Error("User not found");
         }
@@ -104,11 +103,11 @@ export default class UserController {
   public async findByEmail(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const email: string | undefined = request.params.email;
     try {
-      const result: UserObj | null = await model.findOne({ email: email });
+      const result: UserObj | null = await Model.findOne({ email });
       if (!result) {
         throw new Error("User not found");
       }
@@ -137,18 +136,18 @@ export default class UserController {
   public async createOne(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const body: UserObj = request.body;
 
     try {
       if (body) {
-        database.createTransaction();
-        const user = new model({
+        await database.createTransaction();
+        const user = new Model({
           ...body,
 
           name: helper.trimExtraWhitespaces(body.username),
-          password: await encipher.encrypt(body.password),
+          password: await encipher.encrypt(body.password)
         });
         const result: UserObj = await user.save();
 
@@ -159,13 +158,13 @@ export default class UserController {
           .setEmail(result.email)
           .build();
 
-        database.commitTransaction();
+        await database.commitTransaction();
         response.status(201).json(userDTO);
       } else {
         throw new Error("Missing request data");
       }
     } catch (error) {
-      database.abortTransaction();
+      await database.abortTransaction();
       next(error);
     }
   }
@@ -181,7 +180,7 @@ export default class UserController {
   public async updateOne(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
     const body: UserObj | undefined = request.body;
@@ -191,19 +190,19 @@ export default class UserController {
       if (id && body && auth) {
         const tokenValidation = await authService.validateToken(id, auth);
         if (!tokenValidation) {
-          throw new Error("Invalid token")
+          throw new Error("Invalid token");
         }
 
-        database.createTransaction();
-        await model.findByIdAndUpdate(id, body);
+        await database.createTransaction();
+        await Model.findByIdAndUpdate(id, body);
 
-        database.commitTransaction();
+        await database.commitTransaction();
         response.status(204).end();
       } else {
         throw new Error("Missing request data");
       }
     } catch (error) {
-      database.abortTransaction();
+      await database.abortTransaction();
       next(error);
     }
   }
@@ -219,7 +218,7 @@ export default class UserController {
   public async updatePassword(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
     const newPass: string | undefined = request.body.password;
@@ -229,15 +228,15 @@ export default class UserController {
       if (id && newPass && auth) {
         const tokenValidation = await authService.validateToken(id, auth);
         if (!tokenValidation) {
-          throw new Error("Invalid token")
+          throw new Error("Invalid token");
         }
 
         const hashedPassword = await userService.equalPasswords(id, newPass);
 
-        database.createTransaction();
-        await model.findByIdAndUpdate(id, { password: hashedPassword });
+        await database.createTransaction();
+        await Model.findByIdAndUpdate(id, { password: hashedPassword });
 
-        database.commitTransaction();
+        await database.commitTransaction();
         response.status(204).end();
       } else {
         throw new Error("Missing request data");
@@ -258,7 +257,7 @@ export default class UserController {
   public async deleteOne(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
     const auth: string | undefined = request.header("Authorization");
@@ -267,19 +266,19 @@ export default class UserController {
       if (id && auth) {
         const tokenValidation = await authService.validateToken(id, auth);
         if (!tokenValidation) {
-          throw new Error("Invalid token")
+          throw new Error("Invalid token");
         }
 
-        database.createTransaction();
-        await model.findByIdAndDelete(id);
+        await database.createTransaction();
+        await Model.findByIdAndDelete(id);
 
-        database.commitTransaction();
+        await database.commitTransaction();
         response.status(204).end();
       } else {
         throw new Error("Missing request data");
       }
     } catch (error) {
-      database.abortTransaction;
+      await database.abortTransaction();
       next(error);
     }
   }

@@ -1,7 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { UserObj } from "../../types/Ambient";
+import { type UserObj } from "../../types/Ambient";
 import App from "../../config/App";
-import model from "../../models/UserModel";
+import Model from "../../models/UserModel";
 import Helper from "../../utils/Helper";
 import express from "express";
 import mongoose from "mongoose";
@@ -21,12 +21,12 @@ describe("User tests", () => {
   const userObj: UserObj = {
     username: "test",
     password: "test",
-    email: "test@email.com",
+    email: "test@email.com"
   };
   const newUser: Object = {
     username: "test",
     password: "test",
-    email: "test2@email.com",
+    email: "test2@email.com"
   };
   const key: string = process.env.AUTHORIZATION_KEY!;
 
@@ -53,13 +53,13 @@ describe("User tests", () => {
    * @async
    */
   beforeEach(async () => {
-    await model.deleteMany({});
+    await Model.deleteMany({});
 
-    const newUser = new model(userObj);
+    const newUser = new Model(userObj);
     const user = await newUser.save();
 
     const newToken = jwt.sign({ id: user.id }, key, {
-      expiresIn: "10s",
+      expiresIn: "10s"
     });
 
     userId = user.id;

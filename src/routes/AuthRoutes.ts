@@ -11,7 +11,7 @@ export default class AuthRoutes {
   public router: Router = Router();
 
   /** Dependencies */
-  private controller: AuthController = new AuthController();
+  private readonly controller: AuthController = new AuthController();
 
   /**
    * Class constructor.
@@ -25,7 +25,7 @@ export default class AuthRoutes {
   /**
    * Set all the authorization routes.
    */
-  private initializeRoutes() {
+  private initializeRoutes(): void {
     this.router.post("/access-token/:id", this.controller.accessToken);
     this.router.post("/sign-in/:id", this.controller.login);
   }

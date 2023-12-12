@@ -1,7 +1,6 @@
-import { NextFunction, Request, Response } from "express";
-import { ChatObj, MessageObj } from "../types/Ambient";
-import model from "../models/ChatModel";
-import _ from "lodash";
+import { type NextFunction, type Request, type Response } from "express";
+import { type ChatObj, type MessageObj } from "../types/Ambient";
+import Model from "../models/ChatModel";
 import Database from "../config/Database";
 import AuthorizationService from "../services/AuthorizationService";
 import ChatDTO from "../dtos/ChatDTO";
@@ -27,10 +26,10 @@ export default class ChatController {
   public async findAll(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     try {
-      const result: ChatObj[] = await model.find();
+      const result: ChatObj[] = await Model.find();
       if (!result) {
         throw new Error("Chat no found");
       }
@@ -42,7 +41,7 @@ export default class ChatController {
             .setId(chat.id!)
             .setParticipants({ ...chat.participants })
             .setConversation({ ...chat.conversation })
-            .build(),
+            .build()
         );
       });
 
@@ -63,13 +62,13 @@ export default class ChatController {
   public async findById(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
 
     try {
       if (id) {
-        const result: ChatObj | null = await model.findById(id);
+        const result: ChatObj | null = await Model.findById(id);
         if (!result) {
           throw new Error("Chat no found");
         }
@@ -100,7 +99,7 @@ export default class ChatController {
   public async createOne(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
     const body: ChatObj = request.body;
@@ -113,8 +112,8 @@ export default class ChatController {
           throw new Error("Invalid token");
         }
 
-        database.createTransaction();
-        const chat = new model(body);
+        await database.createTransaction();
+        const chat = new Model(body);
         const result: ChatObj = await chat.save();
 
         const chatDTO: ChatObj = ChatDTO.builder()
@@ -123,13 +122,13 @@ export default class ChatController {
           .setConversation({ ...result.conversation })
           .build();
 
-        database.commitTransaction();
+        await database.commitTransaction();
         response.status(201).json(chatDTO);
       } else {
         throw new Error("Missing request data");
       }
     } catch (error) {
-      database.abortTransaction();
+      await database.abortTransaction();
       next(error);
     }
   }
@@ -145,7 +144,7 @@ export default class ChatController {
   public async updateOne(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const userId: string | undefined = request.params.userId;
     const chatId: string | undefined = request.params.chatId;
@@ -159,16 +158,16 @@ export default class ChatController {
           throw new Error("Invalid token");
         }
 
-        database.createTransaction();
-        await model.findByIdAndUpdate(chatId, body);
+        await database.createTransaction();
+        await Model.findByIdAndUpdate(chatId, body);
 
-        database.commitTransaction();
+        await database.commitTransaction();
         response.status(204).json();
       } else {
         throw new Error("Missing request data");
       }
     } catch (error) {
-      database.abortTransaction();
+      await database.abortTransaction();
       next(error);
     }
   }
@@ -184,7 +183,7 @@ export default class ChatController {
   public async deleteOne(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const userId: string | undefined = request.params.userId;
     const chatId: string | undefined = request.params.chatId;
@@ -197,16 +196,16 @@ export default class ChatController {
           throw new Error("Invalid token");
         }
 
-        database.createTransaction();
-        await model.findByIdAndDelete(chatId);
+        await database.createTransaction();
+        await Model.findByIdAndDelete(chatId);
 
-        database.commitTransaction();
+        await database.commitTransaction();
         response.status(204).end();
       } else {
         throw new Error("Missing request data");
       }
     } catch (error) {
-      database.abortTransaction();
+      await database.abortTransaction();
       next(error);
     }
   }
@@ -222,7 +221,7 @@ export default class ChatController {
   public async addMessage(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const userId: string | undefined = request.params.userId;
     const chatId: string | undefined = request.params.chatId;
@@ -236,18 +235,18 @@ export default class ChatController {
           throw new Error("Invalid token");
         }
 
-        database.createTransaction();
-        await model.findByIdAndUpdate(chatId, {
-          $push: { conversation: { sender: userId, message: body.message } },
+        await database.createTransaction();
+        await Model.findByIdAndUpdate(chatId, {
+          $push: { conversation: { sender: userId, message: body.message } }
         });
 
-        database.commitTransaction();
+        await database.commitTransaction();
         response.status(204).end();
       } else {
         throw new Error("Missing request data");
       }
     } catch (error) {
-      database.abortTransaction();
+      await database.abortTransaction();
       next(error);
     }
   }

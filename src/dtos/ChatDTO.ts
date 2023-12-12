@@ -1,9 +1,5 @@
 import { Schema } from "mongoose";
-import {
-  type MessageObj,
-  type ChatObj,
-  type ConversationObj,
-} from "../types/Ambient";
+import { type ChatObj, type ConversationObj } from "../types/Ambient";
 
 /**
  * Chat DTO class.

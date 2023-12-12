@@ -1,5 +1,5 @@
 import Encipher from "../encryptation/Encipher";
-import { UserObj } from "../types/Ambient";
+import { type UserObj } from "../types/Ambient";
 import model from "../models/UserModel";
 
 /**
@@ -9,7 +9,7 @@ import model from "../models/UserModel";
  */
 export default class UserService {
   /** Dependencies */
-  private encipher: Encipher;
+  private readonly encipher: Encipher;
 
   /**
    * Class constructor.
@@ -38,7 +38,7 @@ export default class UserService {
 
     const isEqual: boolean = await this.encipher.validateData(
       pass,
-      user.password,
+      user.password
     );
     if (isEqual) {
       throw new Error("Equal passwords");

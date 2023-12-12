@@ -6,15 +6,15 @@ import { type Schema } from "mongoose";
  * @interface
  */
 interface UserObj {
-  id?: Schema.Types.ObjectId;
-  username: string;
-  password: string;
-  email: string;
-  contacts?: Schema.Types.ObjectId[] | [];
-  picture?: Schema.Types.Buffer | null;
-  token?: string | null;
-  createdAt?: Date;
-  updatedAt?: Date;
+  id?: Schema.Types.ObjectId
+  username: string
+  password: string
+  email: string
+  contacts?: Schema.Types.ObjectId[] | []
+  picture?: Schema.Types.Buffer | null
+  token?: string | null
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 /**
@@ -23,11 +23,11 @@ interface UserObj {
  * @interface
  */
 interface ChatObj {
-  id?: Schema.Types.ObjectId;
-  participants: Schema.Types.ObjectId[];
-  conversation: ConversationObj | [];
-  createdAt?: Date;
-  updatedAt?: Date;
+  id?: Schema.Types.ObjectId
+  participants: Schema.Types.ObjectId[]
+  conversation: ConversationObj | []
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 /**
@@ -36,7 +36,7 @@ interface ChatObj {
  * @interface
  */
 interface ConversationObj {
-  chat: MessageObj[] | [];
+  chat: MessageObj[] | []
   ws: string
 }
 
@@ -46,10 +46,10 @@ interface ConversationObj {
  * @interface
  */
 interface MessageObj {
-  id?: Schema.Types.ObjectId;
-  datetime?: Date;
-  sender: Schema.Types.ObjectId;
-  message: string;
+  id?: Schema.Types.ObjectId
+  datetime?: Date
+  sender: Schema.Types.ObjectId
+  message: string
 }
 
 /**
@@ -58,7 +58,7 @@ interface MessageObj {
  * @interface
  */
 interface TokenObj {
-  token: string;
+  token: string
 }
 
 /**
@@ -67,8 +67,8 @@ interface TokenObj {
  * @interface
  */
 interface ErrorOutput {
-  Ambient: string;
-  Type: string;
-  Message: string;
-  Error: string;
+  Ambient: string
+  Type: string
+  Message: string
+  Error: string
 }

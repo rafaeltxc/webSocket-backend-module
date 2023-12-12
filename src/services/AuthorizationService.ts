@@ -1,7 +1,6 @@
-import { UserObj } from "../types/Ambient";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { type UserObj } from "../types/Ambient";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 import model from "../models/UserModel";
-import _ from "lodash";
 import Encipher from "../encryptation/Encipher";
 import Helper from "../utils/Helper";
 
@@ -12,11 +11,11 @@ import Helper from "../utils/Helper";
  */
 export default class AuthorizationService {
   /** Properties */
-  private key: string;
+  private readonly key: string;
 
   /** Dependencies */
-  private encipher: Encipher;
-  private helper: Helper;
+  private readonly encipher: Encipher;
+  private readonly helper: Helper;
 
   /**
    * Class constructor
@@ -49,7 +48,7 @@ export default class AuthorizationService {
     return false;
   }
 
-/**
+  /**
    * Update user token in the database after password validation.
    *
    * @param {string} id - User id.
@@ -59,7 +58,7 @@ export default class AuthorizationService {
   public async updateToken(
     id: string,
     token: string,
-    pass: string,
+    pass: string
   ): Promise<void> {
     const user: UserObj | null = await model.findById(id);
     if (!user) {
@@ -68,7 +67,7 @@ export default class AuthorizationService {
 
     const validation: boolean = await this.encipher.validateData(
       pass,
-      user.password,
+      user.password
     );
     if (!validation) {
       throw new Error("Wrong password");
@@ -85,7 +84,10 @@ export default class AuthorizationService {
    * @param response App response handler.
    * @param next Express App function.
    */
-  public async validateToken(id: string, receivedToken: string): Promise<boolean> {
+  public async validateToken(
+    id: string,
+    receivedToken: string
+  ): Promise<boolean> {
     const token: string = this.helper.formatToken(receivedToken);
 
     const user: UserObj | null = await model.findById(id);
@@ -95,7 +97,7 @@ export default class AuthorizationService {
 
     const decoded: JwtPayload | null = jwt.decode(token, {
       complete: true,
-      json: true,
+      json: true
     });
 
     const tokenId: string | undefined = decoded?.payload?.id;
@@ -104,7 +106,7 @@ export default class AuthorizationService {
     }
 
     const validated: string | JwtPayload = jwt.verify(token, this.key, {
-      maxAge: "1h",
+      maxAge: "1h"
     });
     if (!validated) {
       return false;

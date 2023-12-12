@@ -3,7 +3,7 @@ import {
   startSession,
   set,
   type Mongoose,
-  type ClientSession,
+  type ClientSession
 } from "mongoose";
 
 /**
@@ -13,10 +13,10 @@ import {
  */
 export default class Database {
   /** Properties */
-  private URL: string | undefined = process.env.URL;
-  private MONGO_NAME: string | undefined = process.env.MONGO_NAME;
-  private MONGO_USER: string | undefined = process.env.MONGO_USER;
-  private MONGO_PASS: string | undefined = process.env.MONGO_PASS;
+  private readonly URL: string | undefined = process.env.URL;
+  private readonly MONGO_NAME: string | undefined = process.env.MONGO_NAME;
+  private readonly MONGO_USER: string | undefined = process.env.MONGO_USER;
+  private readonly MONGO_PASS: string | undefined = process.env.MONGO_PASS;
   private session: ClientSession | null;
 
   /**
@@ -38,7 +38,7 @@ export default class Database {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
-      },
+      }
     });
   }
 
@@ -47,12 +47,12 @@ export default class Database {
    *
    * @returns New server connection.
    */
-  public connect(): Promise<Mongoose> {
-    return connect(`${this.URL}`, {
+  public async connect(): Promise<Mongoose> {
+    return await connect(`${this.URL}`, {
       dbName: this.MONGO_NAME,
       user: this.MONGO_USER,
       pass: this.MONGO_PASS,
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 10000
     });
   }
 
@@ -63,7 +63,7 @@ export default class Database {
    */
   public async createTransaction(): Promise<void> {
     this.session = await startSession();
-    return this.session.startTransaction();
+    this.session.startTransaction();
   }
 
   /**
@@ -73,7 +73,7 @@ export default class Database {
    */
   public async commitTransaction(): Promise<void> {
     await this.session?.commitTransaction();
-    return this.session?.endSession();
+    return await this.session?.endSession();
   }
 
   /**
@@ -83,6 +83,6 @@ export default class Database {
    */
   public async abortTransaction(): Promise<void> {
     await this.session?.abortTransaction();
-    return this.session?.endSession();
+    return await this.session?.endSession();
   }
 }

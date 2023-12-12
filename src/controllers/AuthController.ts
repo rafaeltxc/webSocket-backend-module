@@ -1,12 +1,12 @@
 import { type NextFunction, type Request, type Response } from "express";
-import jwt, { type JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import AuthorizationService from "../services/AuthorizationService";
 import Helper from "../utils/Helper";
 import TokenDTO from "../dtos/TokenDTO";
-import { TokenObj } from "../types/Ambient";
+import { type TokenObj } from "../types/Ambient";
 
 /** Properties */
-const key: string = process.env.AUTHORIZATION_KEY!;
+const key: string | undefined = process.env.AUTHORIZATION_KEY;
 
 /** Dependencies */
 const authorizationService: AuthorizationService = new AuthorizationService();
@@ -29,7 +29,7 @@ export default class AuthController {
   public async accessToken(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
 
@@ -41,9 +41,9 @@ export default class AuthController {
           throw new Error("User token not recongnized");
         }
 
-        const signed = jwt.sign({ id }, key, {
+        const signed = jwt.sign({ id }, key!, {
           algorithm: "HS256",
-          expiresIn: "1h",
+          expiresIn: "1h"
         });
 
         const newToken: string = helper.concatWithSpaces("Bearer", signed);
@@ -70,22 +70,18 @@ export default class AuthController {
   public async login(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
     const password: string | undefined = request.body.password;
 
     try {
       if (id && password) {
-        const newToken = jwt.sign({ id }, key, {
-          algorithm: "HS256",
+        const newToken = jwt.sign({ id }, key!, {
+          algorithm: "HS256"
         });
 
         await authorizationService.updateToken(id, newToken, password);
-        const accessToken: string = jwt.sign({ id }, key, {
-          algorithm: "HS256",
-          expiresIn: "1h",
-        });
 
         const token: string = helper.concatWithSpaces("Bearer", newToken);
         const tokenDTO: TokenObj = TokenDTO.builder().setToken(token).build();

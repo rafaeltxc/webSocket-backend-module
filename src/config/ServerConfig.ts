@@ -3,10 +3,10 @@ import { type Server } from "node:http";
 
 export default class ServerConfig {
   /** Properties */
-  private PORT: number | undefined;
+  private readonly PORT: number | undefined;
 
   /** Dependencies */
-  private mongodb: Database;
+  private readonly mongodb: Database;
 
   constructor() {
     this.PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : undefined;
@@ -17,17 +17,17 @@ export default class ServerConfig {
    * Set server on listening configuration.
    */
   public config(server: Server): void {
-    /** 
+    /**
      * Server on listening configuration.
-     */ 
-    server.on("listening", async () => {
+     */
+    server.on("listening", async(): void => {
       try {
         await this.mongodb.connect();
         console.log("Connection with the Database established");
       } catch (error) {
         console.error({
           Message: "Connection with the Database could not be established",
-          Error: error,
+          Error: error
         });
       }
     });

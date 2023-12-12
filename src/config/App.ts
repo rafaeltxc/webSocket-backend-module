@@ -16,10 +16,10 @@ export default class App {
   readonly app: Application;
 
   /** Dependencies */
-  private user: UserRoute = new UserRoute();
-  private chat: ChatRoutes = new ChatRoutes();
-  private authorization: AuthRoutes = new AuthRoutes();
-  private middlewares: AppMiddlewares = new AppMiddlewares();
+  private readonly user: UserRoute = new UserRoute();
+  private readonly chat: ChatRoutes = new ChatRoutes();
+  private readonly authorization: AuthRoutes = new AuthRoutes();
+  private readonly middlewares: AppMiddlewares = new AppMiddlewares();
 
   /**
    * Class constructor to initialize app.
@@ -40,7 +40,7 @@ export default class App {
    */
   private config(app: Application): void {
     const corsOptions: CorsOptions = {
-      origin: "*",
+      origin: "*"
     };
 
     app.use(cors(corsOptions));

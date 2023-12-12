@@ -2,14 +2,17 @@
   "compilerOptions": {
     "sourceMap": true,
     "strict": true,
-    "target": "es2016",
+    "target": "esnext",
     "module": "commonjs",
     "outDir": "./dist",
     "baseUrl": "./src",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "typeRoots": ["./node_modules/@types", "./src/types/"],
-    "types": ["node", "mocha"]
+    "types": ["node", "mocha"],
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": [
     "src/**/*.ts"

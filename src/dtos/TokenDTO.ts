@@ -1,4 +1,4 @@
-import { TokenObj } from "types/Ambient";
+import { type TokenObj } from "types/Ambient";
 
 /**
  * Token DTO class.

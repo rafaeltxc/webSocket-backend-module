@@ -1,8 +1,12 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { ChatObj, MessageObj, UserObj } from "../../types/Ambient";
+import {
+  type ChatObj,
+  type MessageObj,
+  type UserObj
+} from "../../types/Ambient";
 import App from "../../config/App";
 import userModel from "../../models/UserModel";
-import chatModel from "../../models/ChatModel";
+import ChatModel from "../../models/ChatModel";
 import Helper from "../../utils/Helper";
 import jwt from "jsonwebtoken";
 import express from "express";
@@ -25,13 +29,13 @@ describe("Chat tests", () => {
     {
       username: "test",
       password: "test",
-      email: "test@email.com",
+      email: "test@email.com"
     },
     {
       username: "test",
       password: "test",
-      email: "test2@email.com",
-    },
+      email: "test2@email.com"
+    }
   ];
   const key: string = process.env.AUTHORIZATION_KEY!;
 
@@ -65,15 +69,15 @@ describe("Chat tests", () => {
     userId2 = user[1].id;
 
     const newToken = jwt.sign({ id: userId1 }, key, {
-      expiresIn: "10s",
+      expiresIn: "10s"
     });
 
     const chatObj: ChatObj = {
       participants: [userId1, userId2],
-      conversation: [],
+      conversation: []
     };
 
-    const newChat = new chatModel(chatObj);
+    const newChat = new ChatModel(chatObj);
     const result = await newChat.save();
     chatId = result.id;
     token = helper.concatWithSpaces("Bearer", newToken);
@@ -118,7 +122,7 @@ describe("Chat tests", () => {
    */
   it("Should post a new chat", async () => {
     const newChat: Object = {
-      participants: [userId1, userId2],
+      participants: [userId1, userId2]
     };
 
     const result = await chai
@@ -138,7 +142,7 @@ describe("Chat tests", () => {
    */
   it("Should return status code 204 for chat update", async () => {
     const newChat: Object = {
-      participants: [userId1, userId2],
+      participants: [userId1, userId2]
     };
 
     const result = await chai
@@ -172,7 +176,7 @@ describe("Chat tests", () => {
   it("Should add message to existent chat", async () => {
     const newMessage: MessageObj = {
       sender: userId1,
-      message: "test",
+      message: "test"
     };
 
     const result = await chai

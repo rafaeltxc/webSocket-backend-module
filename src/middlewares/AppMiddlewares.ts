@@ -19,7 +19,7 @@ export default class AppMiddlewares {
     error: Error,
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): void {
     switch (error.name) {
       case "MongooseError":
@@ -47,11 +47,11 @@ export default class AppMiddlewares {
   public unknownEndpoint(
     request: Request,
     response: Response,
-    next: NextFunction,
+    next: NextFunction
   ): void {
     try {
       response.status(404).json({
-        Error: "Unknown endpoint",
+        Error: "Unknown endpoint"
       });
       next();
     } catch (error) {

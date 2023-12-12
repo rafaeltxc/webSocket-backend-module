@@ -9,15 +9,32 @@
     "sourceType": "module"
   },
   "rules": {
-    "semi": [
+    "@typescript-eslint/quotes": [
+      "error",
+      "double",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "@typescript-eslint/semi": [
       "warn",
       "always"
     ],
-    "@typescript-eslint/semi": "off",
-    "space-before-function-paren": ["off", {
+    "@typescript-eslint/space-before-function-paren": [
+      "off",
+      {
         "anonymous": "never",
         "named": "never",
         "asyncArrow": "never"
-    }],
+      }
+    ],
+    "@typescript-eslint/no-unused-expressions": "warn",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "@typescript-eslint/consistent-type-assertions": "off",
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/no-base-to-string": "off",
+    "@typescript-eslint/restrict-template-expressions": "off"
   }
 }

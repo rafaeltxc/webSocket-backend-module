@@ -4,11 +4,11 @@ import { type ChatObj } from "../types/Ambient";
 /**
  * Mongoose schema for chat document.
  */
-const ChatSchema: Schema<ChatObj> = new Schema(
+const ChatSchema = new Schema<ChatObj>(
   {
     participants: {
       type: [{ type: Schema.Types.ObjectId, ref: "User" }],
-      required: true,
+      required: true
     },
     conversation: {
       type: {
@@ -16,35 +16,35 @@ const ChatSchema: Schema<ChatObj> = new Schema(
           {
             id: {
               type: Schema.Types.ObjectId,
-              auto: true,
+              auto: true
             },
             datetime: {
               type: Date,
-              default: Date.now,
+              default: Date.now
             },
             sender: {
               type: Schema.Types.ObjectId,
               ref: "User",
-              required: true,
+              required: true
             },
             message: {
               type: String,
-              required: true,
-            },
-          },
+              required: true
+            }
+          }
         ],
         ws: {
           type: String,
-          required: true,
-        },
+          required: true
+        }
       },
       required: false,
       default: []
-    },
+    }
   },
   {
-    timestamps: true,
-  },
+    timestamps: true
+  }
 );
 
 /**

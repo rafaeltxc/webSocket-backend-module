@@ -36,7 +36,7 @@ export default class Helper {
    *
    * @param {string} token - Full token string with it's type.
    */
-  public formatToken(token: string) {
+  public formatToken(token: string): string {
     const formatedToken: string = token.split(" ")[1];
     return formatedToken;
   }

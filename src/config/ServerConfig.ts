@@ -20,7 +20,7 @@ export default class ServerConfig {
     /**
      * Server on listening configuration.
      */
-    server.on("listening", async(): void => {
+    server.on("listening", async (): Promise<void> => {
       try {
         await this.mongodb.connect();
         console.log("Connection with the Database established");

@@ -11,34 +11,27 @@ const ChatSchema = new Schema<ChatObj>(
       required: true
     },
     conversation: {
-      type: {
-        chat: [
-          {
-            id: {
-              type: Schema.Types.ObjectId,
-              auto: true
-            },
-            datetime: {
-              type: Date,
-              default: Date.now
-            },
-            sender: {
-              type: Schema.Types.ObjectId,
-              ref: "User",
-              required: true
-            },
-            message: {
-              type: String,
-              required: true
-            }
+      type: [
+        {
+          id: {
+            type: Schema.Types.ObjectId,
+            auto: true
+          },
+          datetime: {
+            type: Date,
+            default: Date.now
+          },
+          sender: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true
+          },
+          message: {
+            type: String,
+            required: true
           }
-        ],
-        ws: {
-          type: String,
-          required: true
         }
-      },
-      required: false,
+      ],
       default: []
     }
   },

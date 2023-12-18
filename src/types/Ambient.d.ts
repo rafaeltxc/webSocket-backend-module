@@ -25,19 +25,9 @@ interface UserObj {
 interface ChatObj {
   id?: Schema.Types.ObjectId
   participants: Schema.Types.ObjectId[]
-  conversation: ConversationObj | []
+  conversation: MessageObj[] | []
   createdAt?: Date
   updatedAt?: Date
-}
-
-/**
- * Conversation main interface.
- *
- * @interface
- */
-interface ConversationObj {
-  chat: MessageObj[] | []
-  ws: string
 }
 
 /**

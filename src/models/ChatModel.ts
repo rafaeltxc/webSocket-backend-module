@@ -11,28 +11,8 @@ const ChatSchema = new Schema<ChatObj>(
       required: true
     },
     conversation: {
-      type: [
-        {
-          id: {
-            type: Schema.Types.ObjectId,
-            auto: true
-          },
-          datetime: {
-            type: Date,
-            default: Date.now
-          },
-          sender: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true
-          },
-          message: {
-            type: String,
-            required: true
-          }
-        }
-      ],
-      default: []
+      type: Schema.Types.ObjectId,
+      ref: "Conversation"
     }
   },
   {

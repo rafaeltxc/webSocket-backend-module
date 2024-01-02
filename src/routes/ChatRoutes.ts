@@ -11,7 +11,7 @@ export default class ChatRoutes {
   public router: Router = Router();
 
   /** Dependencies */
-  private controller: ChatController = new ChatController();
+  private readonly controller: ChatController = new ChatController();
 
   /**
    * Class constructor.

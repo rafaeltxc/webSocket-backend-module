@@ -1,4 +1,5 @@
 import { type Schema } from "mongoose";
+import { type WebSocket } from "ws";
 
 /**
  * User main interface.
@@ -25,9 +26,20 @@ interface UserObj {
 interface ChatObj {
   id?: Schema.Types.ObjectId
   participants: Schema.Types.ObjectId[]
-  conversation: MessageObj[] | []
+  conversation: Schema.Types.ObjectId
   createdAt?: Date
   updatedAt?: Date
+}
+
+/**
+ * Conversation main interface
+ *
+ * @interface
+ */
+interface ConversationObj {
+  id?: Schema.Types.ObjectId
+  ws: WebSocket | null
+  messages: MessageObj[] | []
 }
 
 /**

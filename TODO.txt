@@ -1,4 +1,4 @@
 File in constant change. Tasks for a short period of time related with the current feature being implemented.
 
-1_ Swagger
+1_ Refct the controllers to add conversation class
 

@@ -4,10 +4,12 @@ import Model from "../models/ChatModel";
 import Database from "../config/Database";
 import AuthorizationService from "../services/AuthorizationService";
 import ChatDTO from "../dtos/ChatDTO";
+import ChatService from "../services/ChatService";
 
 /** Dependencies */
 const database = new Database();
 const authService: AuthorizationService = new AuthorizationService();
+const chatService: ChatService = new ChatService();
 
 /**
  * Chat controller class.
@@ -34,18 +36,18 @@ export default class ChatController {
         throw new Error("Chat no found");
       }
 
-      const chatList: ChatObj[] = [];
-      result.forEach((chat) => {
-        chatList.push(
-          ChatDTO.builder()
-            .setId(chat.id!)
-            .setParticipants({ ...chat.participants })
-            .setConversation({ ...chat.conversation })
-            .build()
-        );
-      });
+      // const chatList: ChatObj[] = [];
+      // result.forEach((chat) => {
+      //   chatList.push(
+      //     ChatDTO.builder()
+      //       .setId(chat.id!)
+      //       .setParticipants({ ...chat.participants })
+      //       .setConversation(chat.conversation)
+      //       .build()
+      //   );
+      // });
 
-      response.status(200).json(chatList);
+      response.status(200).json(result);
     } catch (error) {
       next(error);
     }
@@ -76,7 +78,7 @@ export default class ChatController {
         const chat: ChatObj = ChatDTO.builder()
           .setId(result.id!)
           .setParticipants({ ...result.participants })
-          .setConversation({ ...result.conversation })
+          .setConversation(result.conversation)
           .build();
 
         response.status(200).json(chat);
@@ -116,10 +118,12 @@ export default class ChatController {
         const chat = new Model(body);
         const result: ChatObj = await chat.save();
 
+        const conversation = await chatService.createConversation();
+
         const chatDTO: ChatObj = ChatDTO.builder()
           .setId(result.id!)
           .setParticipants({ ...result.participants })
-          .setConversation({ ...result.conversation })
+          .setConversation(conversation)
           .build();
 
         await database.commitTransaction();

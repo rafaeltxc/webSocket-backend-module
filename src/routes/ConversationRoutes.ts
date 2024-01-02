@@ -1,17 +1,12 @@
+import ConversationController from "../controllers/ConversationController";
 import { Router } from "express";
-import UserController from "../controllers/UserController";
 
-/**
- * Routes class for UserController.
- *
- * @class
- */
-export default class UserRoute {
+export default class ConversationRoutes {
   /** Properties */
   public router: Router = Router();
 
   /** Dependencies */
-  private readonly controller: UserController = new UserController();
+  private readonly controller: ConversationController = new ConversationController();
 
   /**
    * class constructor.
@@ -22,16 +17,11 @@ export default class UserRoute {
     this.initializeRoutes();
   }
 
-  /**
-   * Set all the user routes.
-   */
   private initializeRoutes(): void {
     this.router.get("/", this.controller.findAll);
     this.router.get("/:id", this.controller.findById);
-    this.router.get("/email/:email", this.controller.findByEmail);
     this.router.post("/", this.controller.createOne);
     this.router.put("/:id", this.controller.updateOne);
-    this.router.put("/password/:id", this.controller.updatePassword);
-    this.router.delete("/:id", this.controller.deleteOne);
+    this.router.delete("/:id", this.controller.updateOne);
   }
 }

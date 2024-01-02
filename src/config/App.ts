@@ -4,6 +4,7 @@ import ChatRoutes from "../routes/ChatRoutes";
 import UserRoute from "../routes/UserRoutes";
 import AuthRoutes from "../routes/AuthRoutes";
 import AppMiddlewares from "../middlewares/AppMiddlewares";
+import ConversationRoutes from "../routes/ConversationRoutes";
 import path from "path";
 
 /**
@@ -19,6 +20,7 @@ export default class App {
   private readonly user: UserRoute = new UserRoute();
   private readonly chat: ChatRoutes = new ChatRoutes();
   private readonly authorization: AuthRoutes = new AuthRoutes();
+  private readonly conversation: ConversationRoutes = new ConversationRoutes();
   private readonly middlewares: AppMiddlewares = new AppMiddlewares();
 
   /**
@@ -59,6 +61,7 @@ export default class App {
     app.use("/user", this.user.router);
     app.use("/chat", this.chat.router);
     app.use("/auth", this.authorization.router);
+    app.use("/conversation", this.conversation.router);
 
     app.use(this.middlewares.unknownEndpoint);
     app.use(this.middlewares.errorHandler);

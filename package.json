@@ -24,6 +24,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^7.5.4",
     "swagger-ui-express": "^5.0.0",
+    "uuid": "^9.0.1",
     "ws": "^8.14.2"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "@types/node": "^20.8.7",
     "@types/sinon": "^10.0.20",
     "@types/superagent": "^4.1.24",
+    "@types/uuid": "^9.0.7",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.7.4",

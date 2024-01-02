@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { type MessageObj, type ChatObj } from "../types/Ambient";
+import { type ChatObj } from "../types/Ambient";
 
 /**
  * Chat DTO class.
@@ -9,7 +9,7 @@ import { type MessageObj, type ChatObj } from "../types/Ambient";
 export default class ChatDTO implements ChatObj {
   public id: Schema.Types.ObjectId;
   public participants: Schema.Types.ObjectId[];
-  public conversation: MessageObj[] | [];
+  public conversation: Schema.Types.ObjectId;
 
   /**
    * Class constructor.
@@ -19,7 +19,7 @@ export default class ChatDTO implements ChatObj {
   private constructor() {
     this.id = new Schema.Types.ObjectId("");
     this.participants = [];
-    this.conversation = [];
+    this.conversation = new Schema.Types.ObjectId("");
   }
 
   /**
@@ -59,7 +59,7 @@ export default class ChatDTO implements ChatObj {
    * @param {ConversationObj | []} conversation - Messages to be added.
    * @returns {ChatDTO}
    */
-  public setConversation(conversation: MessageObj[] | []): ChatDTO {
+  public setConversation(conversation: Schema.Types.ObjectId): ChatDTO {
     this.conversation = conversation;
     return this;
   }

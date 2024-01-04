@@ -1,7 +1,7 @@
 import "dotenv/config";
 import App from "./config/App";
 import ServerConfig from "./config/ServerConfig";
-import WebSocketConfig from "./config/WebSocketConfig";
+import WebSocket from "./config/WebSocket";
 import { WebSocketServer } from "ws";
 import http, { type Server } from "node:http";
 import express from "express";
@@ -16,7 +16,7 @@ serverConfig.config(httpServer);
 
 /** WebSocket connection */
 export const ws: WebSocketServer = new WebSocketServer({ server: httpServer });
-new WebSocketConfig(ws).config();
+new WebSocket(ws).config();
 
 /** Start server */
 serverConfig.listen(httpServer);

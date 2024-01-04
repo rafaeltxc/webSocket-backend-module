@@ -1,32 +1,32 @@
 import { type NextFunction, type Request, type Response } from "express";
-import Model from "../models/ConversationModel";
+import Model from "../models/RoomModel";
 import Database from "../config/Database";
-import { type ConversationObj } from "../types/Ambient";
-import ConversationDTO from "../dtos/ConversationDTO";
+import { type RoomObj } from "../types/Ambient";
+import RoomDTO from "../dtos/RoomDTO";
 
 const database = new Database();
 
-export default class ConversationController {
+export default class RoomController {
   public async findAll(
     request: Request,
     response: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const result: ConversationObj[] = await Model.find();
+      const result: RoomObj[] = await Model.find();
 
-      const conversationList: ConversationObj[] = [];
-      result.forEach((conversation) => {
-        conversationList.push(
-          ConversationDTO.builder()
-            .setId(conversation.id!)
-            .setWs(conversation.ws!)
-            .setMessages(conversation.messages)
+      const roomList: RoomObj[] = [];
+      result.forEach((room) => {
+        roomList.push(
+          RoomDTO.builder()
+            .setId(room.id!)
+            .setWs(room.clients)
+            .setMessages(room.messages)
             .build()
         );
       });
 
-      response.status(200).json(conversationList);
+      response.status(200).json(roomList);
     } catch (error) {
       next(error);
     }
@@ -41,18 +41,18 @@ export default class ConversationController {
 
     try {
       if (id) {
-        const result: ConversationObj | null = await Model.findById(id);
+        const result: RoomObj | null = await Model.findById(id);
         if (!result) {
-          throw new Error("Conversation not found");
+          throw new Error("Room not found");
         }
 
-        const conversation: ConversationObj = ConversationDTO.builder()
+        const room: RoomObj = RoomDTO.builder()
           .setId(result.id!)
-          .setWs(result.ws!)
+          .setWs(result.clients)
           .setMessages(result.messages)
           .build();
 
-        response.status(200).json(conversation);
+        response.status(200).json(room);
       } else {
         throw new Error("Missing request data");
       }
@@ -66,21 +66,21 @@ export default class ConversationController {
     response: Response,
     next: NextFunction
   ): Promise<void> {
-    const body: ConversationObj = request.body;
+    const body: RoomObj = request.body;
 
     try {
       await database.createTransaction();
-      const conversation = new Model(body);
-      const result: ConversationObj = await conversation.save();
+      const room = new Model(body);
+      const result: RoomObj = await room.save();
 
-      const conversationDTO: ConversationObj = ConversationDTO.builder()
+      const roomDTO: RoomObj = RoomDTO.builder()
         .setId(result.id!)
-        .setWs(result.ws!)
+        .setWs(result.clients)
         .setMessages(result.messages)
         .build();
 
       await database.commitTransaction();
-      response.status(201).json(conversationDTO);
+      response.status(201).json(roomDTO);
     } catch (error) {
       await database.abortTransaction();
       next(error);
@@ -93,7 +93,7 @@ export default class ConversationController {
     next: NextFunction
   ): Promise<void> {
     const id: string | undefined = request.params.id;
-    const body: ConversationObj = request.body;
+    const body: RoomObj = request.body;
 
     try {
       await database.createTransaction();

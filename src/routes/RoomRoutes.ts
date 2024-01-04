@@ -1,12 +1,12 @@
-import ConversationController from "../controllers/ConversationController";
+import RoomController from "../controllers/RoomController";
 import { Router } from "express";
 
-export default class ConversationRoutes {
+export default class RoomRoutes {
   /** Properties */
   public router: Router = Router();
 
   /** Dependencies */
-  private readonly controller: ConversationController = new ConversationController();
+  private readonly controller: RoomController = new RoomController();
 
   /**
    * class constructor.

@@ -10,9 +10,9 @@ const ChatSchema = new Schema<ChatObj>(
       type: [{ type: Schema.Types.ObjectId, ref: "User" }],
       required: true
     },
-    conversation: {
+    room: {
       type: Schema.Types.ObjectId,
-      ref: "Conversation"
+      ref: "Room"
     }
   },
   {

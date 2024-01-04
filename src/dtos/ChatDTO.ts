@@ -9,7 +9,7 @@ import { type ChatObj } from "../types/Ambient";
 export default class ChatDTO implements ChatObj {
   public id: Schema.Types.ObjectId;
   public participants: Schema.Types.ObjectId[];
-  public conversation: Schema.Types.ObjectId;
+  public room: Schema.Types.ObjectId;
 
   /**
    * Class constructor.
@@ -19,7 +19,7 @@ export default class ChatDTO implements ChatObj {
   private constructor() {
     this.id = new Schema.Types.ObjectId("");
     this.participants = [];
-    this.conversation = new Schema.Types.ObjectId("");
+    this.room = new Schema.Types.ObjectId("");
   }
 
   /**
@@ -54,13 +54,13 @@ export default class ChatDTO implements ChatObj {
   }
 
   /**
-   * Set chat conversations.
+   * Set chat room.
    *
-   * @param {ConversationObj | []} conversation - Messages to be added.
+   * @param {RoomObj | []} room - Messages to be added.
    * @returns {ChatDTO}
    */
-  public setConversation(conversation: Schema.Types.ObjectId): ChatDTO {
-    this.conversation = conversation;
+  public setRoom(room: Schema.Types.ObjectId): ChatDTO {
+    this.room = room;
     return this;
   }
 

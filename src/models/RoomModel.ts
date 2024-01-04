@@ -1,11 +1,14 @@
 import { Schema, model } from "mongoose";
-import { type ConversationObj } from "../types/Ambient";
+import { type RoomObj } from "../types/Ambient";
 
-const ConversationSchema = new Schema<ConversationObj>({
-  ws: {
-    type: Object,
-    required: true
-  },
+const RoomSchema = new Schema<RoomObj>({
+  clients: [
+    {
+      type: Schema.Types.Mixed,
+      required: false,
+      default: []
+    }
+  ],
   messages: {
     type: [
       {
@@ -32,4 +35,4 @@ const ConversationSchema = new Schema<ConversationObj>({
   }
 });
 
-export default model<ConversationObj>("Conversation", ConversationSchema);
+export default model<RoomObj>("Room", RoomSchema);

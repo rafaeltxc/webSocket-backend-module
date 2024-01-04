@@ -31,7 +31,9 @@ export default class ChatController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const result: ChatObj[] = await Model.find();
+      const result: ChatObj[] = await Model.find().populate({
+        path: "room"
+      });
       if (!result) {
         throw new Error("Chat no found");
       }
@@ -42,7 +44,7 @@ export default class ChatController {
       //     ChatDTO.builder()
       //       .setId(chat.id!)
       //       .setParticipants({ ...chat.participants })
-      //       .setConversation(chat.conversation)
+      //       .setRoom(chat.room)
       //       .build()
       //   );
       // });
@@ -70,15 +72,19 @@ export default class ChatController {
 
     try {
       if (id) {
-        const result: ChatObj | null = await Model.findById(id);
+        const result: ChatObj | null = await Model.findById(id).populate({
+          path: "room"
+        });
         if (!result) {
           throw new Error("Chat no found");
         }
 
+        console.log(result);
+
         const chat: ChatObj = ChatDTO.builder()
           .setId(result.id!)
           .setParticipants({ ...result.participants })
-          .setConversation(result.conversation)
+          .setRoom(result.room)
           .build();
 
         response.status(200).json(chat);
@@ -115,15 +121,18 @@ export default class ChatController {
         }
 
         await database.createTransaction();
-        const chat = new Model(body);
-        const result: ChatObj = await chat.save();
+        const room = await chatService.createRoom();
 
-        const conversation = await chatService.createConversation();
+        const chat = new Model({
+          ...body,
+          room
+        });
+        const result: ChatObj = await chat.save();
 
         const chatDTO: ChatObj = ChatDTO.builder()
           .setId(result.id!)
           .setParticipants({ ...result.participants })
-          .setConversation(conversation)
+          .setRoom(room)
           .build();
 
         await database.commitTransaction();

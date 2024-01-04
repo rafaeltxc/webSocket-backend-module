@@ -26,19 +26,19 @@ interface UserObj {
 interface ChatObj {
   id?: Schema.Types.ObjectId
   participants: Schema.Types.ObjectId[]
-  conversation: Schema.Types.ObjectId
+  room: Schema.Types.ObjectId
   createdAt?: Date
   updatedAt?: Date
 }
 
 /**
- * Conversation main interface
+ * Room main interface
  *
  * @interface
  */
-interface ConversationObj {
+interface RoomObj {
   id?: Schema.Types.ObjectId
-  ws: WebSocket | null
+  clients: WebSocket[] | []
   messages: MessageObj[] | []
 }
 
@@ -73,4 +73,10 @@ interface ErrorOutput {
   Type: string
   Message: string
   Error: string
+}
+
+interface WebSocketData {
+  roomId: string
+  message: string
+  meta: string
 }

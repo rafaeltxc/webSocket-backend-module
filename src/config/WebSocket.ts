@@ -1,22 +1,20 @@
 import { type WebSocketData } from "../types/Ambient";
 import { type WebSocket, type WebSocketServer } from "ws";
-
-interface test {
-  roomId: string
-  clients: WebSocket[]
-}
+import { v4 as uuid } from "uuid";
 
 export default class WebSocketConfig {
   /** Properties */
   private readonly WebSocket: WebSocketServer | null;
-
-  private rooms: test[] = [];
+  private readonly rooms: Map<string, Set<WebSocket>>;
+  private readonly connections: Map<string, WebSocket>;
 
   /**
    * Class constructor
    */
   constructor(ws: WebSocketServer) {
     this.WebSocket = ws;
+    this.rooms = new Map();
+    this.connections = new Map();
   }
 
   public config(): void {
@@ -25,9 +23,8 @@ export default class WebSocketConfig {
         ws.close();
       });
 
-      ws.on("message", async (receivedData: WebSocketData, isBinary: boolean) => {
-        const data = JSON.parse(receivedData.toString());
-        const { roomId, meta, message } = data;
+      ws.on("message", async (data: WebSocketData) => {
+        const { roomId, meta, message } = JSON.parse(data.toString());
 
         switch (meta) {
           case "message":
@@ -48,8 +45,8 @@ export default class WebSocketConfig {
   }
 
   private broadcast(id: string, message: string, ws: WebSocket): void {
-    const room: test[] = this.rooms.filter(({ roomId }) => roomId === id);
-    room[0].clients.forEach(client => {
+    const clients = this.rooms.get(id);
+    clients!.forEach((client: WebSocket) => {
       if (client !== ws) {
         client.send(message);
       }
@@ -57,23 +54,28 @@ export default class WebSocketConfig {
   }
 
   private async join(id: string, ws: WebSocket): Promise<void> {
-    if (this.rooms.filter((room) => room.roomId === id).length === 0) {
-      this.rooms.push({
-        roomId: id,
-        clients: [ws]
-      });
+    const clients = this.rooms.get(id);
+
+    if (!clients) {
+      const room = new Set([ws]);
+      this.rooms.set(id, room);
     } else {
-      const newRoomsList: test[] = this.rooms.map(room => {
-        if (room.roomId === id) {
-          const updatedRoom: test = { ...room };
-          updatedRoom.clients.push(ws);
-          return updatedRoom;
-        }
-        return room;
-      });
-      this.rooms = newRoomsList;
+      clients.add(ws);
     }
+
+    this.connections.set(uuid(), ws);
   }
 
-  private async leave(id: string, ws: WebSocket): Promise<void> { }
+  private async leave(id: string, ws: WebSocket): Promise<void> {
+    const clients = this.rooms.get(id);
+
+    if (clients) {
+      clients.delete(ws);
+      if (clients.size === 0) {
+        clients.delete(ws);
+      }
+
+      ws.close();
+    }
+  }
 }

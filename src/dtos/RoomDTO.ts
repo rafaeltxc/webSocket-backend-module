@@ -4,12 +4,12 @@ import { type WebSocket } from "ws";
 
 export default class RoomDTO implements RoomObj {
   public id: Schema.Types.ObjectId;
-  public clients: WebSocket[] | [];
+  public room: string;
   public messages: MessageObj[] | [];
 
   private constructor() {
     this.id = new Schema.Types.ObjectId("");
-    this.clients = [];
+    this.room = "";
     this.messages = [];
   }
 
@@ -22,8 +22,8 @@ export default class RoomDTO implements RoomObj {
     return this;
   }
 
-  public setWs(clients: WebSocket[]): RoomDTO {
-    this.clients = clients;
+  public setWs(room: string): RoomDTO {
+    this.room = room;
     return this;
   }
 

@@ -20,7 +20,7 @@ export default class RoomController {
         roomList.push(
           RoomDTO.builder()
             .setId(room.id!)
-            .setWs(room.clients)
+            .setWs(room.room)
             .setMessages(room.messages)
             .build()
         );
@@ -48,7 +48,7 @@ export default class RoomController {
 
         const room: RoomObj = RoomDTO.builder()
           .setId(result.id!)
-          .setWs(result.clients)
+          .setWs(result.room)
           .setMessages(result.messages)
           .build();
 
@@ -75,7 +75,7 @@ export default class RoomController {
 
       const roomDTO: RoomObj = RoomDTO.builder()
         .setId(result.id!)
-        .setWs(result.clients)
+        .setWs(result.room)
         .setMessages(result.messages)
         .build();
 

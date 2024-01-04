@@ -38,7 +38,7 @@ interface ChatObj {
  */
 interface RoomObj {
   id?: Schema.Types.ObjectId
-  clients: WebSocket[] | []
+  room: string
   messages: MessageObj[] | []
 }
 
@@ -75,6 +75,11 @@ interface ErrorOutput {
   Error: string
 }
 
+/**
+ * WebSocket received data interface
+ *
+ * @interface
+ */
 interface WebSocketData {
   roomId: string
   message: string

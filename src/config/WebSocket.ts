@@ -10,6 +10,8 @@ export default class WebSocketConfig {
 
   /**
    * Class constructor
+   *
+   * @constructor
    */
   constructor(ws: WebSocketServer) {
     this.WebSocket = ws;
@@ -17,6 +19,9 @@ export default class WebSocketConfig {
     this.connections = new Map();
   }
 
+  /**
+  * Configure WebSocket connection.
+  */
   public config(): void {
     this.WebSocket?.on("connection", (ws: WebSocket) => {
       ws.on("error", () => {
@@ -44,6 +49,9 @@ export default class WebSocketConfig {
     });
   }
 
+  /**
+  * WebSocket message broadcast logic
+  */
   private broadcast(id: string, message: string, ws: WebSocket): void {
     const clients = this.rooms.get(id);
     clients!.forEach((client: WebSocket) => {
@@ -53,6 +61,11 @@ export default class WebSocketConfig {
     });
   }
 
+  /**
+  * WebSocket room joining logic
+  *
+  * @async
+  */
   private async join(id: string, ws: WebSocket): Promise<void> {
     const clients = this.rooms.get(id);
 
@@ -66,6 +79,11 @@ export default class WebSocketConfig {
     this.connections.set(uuid(), ws);
   }
 
+  /**
+  * WebSocket room leaving logic
+  *
+  * @async
+  */
   private async leave(id: string, ws: WebSocket): Promise<void> {
     const clients = this.rooms.get(id);
 

@@ -1,18 +1,21 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import {
+  type RoomObj,
   type ChatObj,
   type MessageObj,
   type UserObj
 } from "../../types/Ambient";
-import App from "../../config/App";
-import userModel from "../../models/UserModel";
+import UserModel from "../../models/UserModel";
+import RoomModel from "../../models/RoomModel";
 import ChatModel from "../../models/ChatModel";
 import Helper from "../../utils/Helper";
+import App from "../../config/App";
 import jwt from "jsonwebtoken";
-import express from "express";
 import mongoose from "mongoose";
 import chaiHttp from "chai-http";
 import chai, { expect } from "chai";
+import { v4 as uuid } from "uuid";
+import express from "express";
 
 /**
  * Chat tests class.
@@ -20,6 +23,7 @@ import chai, { expect } from "chai";
 describe("Chat tests", () => {
   /** Properties */
   chai.use(chaiHttp);
+  const app = new App(express());
   let memorydb: MongoMemoryServer;
   let userId1: mongoose.Schema.Types.ObjectId;
   let userId2: mongoose.Schema.Types.ObjectId;
@@ -37,11 +41,13 @@ describe("Chat tests", () => {
       email: "test2@email.com"
     }
   ];
+  const roomObj: RoomObj = {
+    room: uuid(),
+    messages: []
+  };
   const key: string = process.env.AUTHORIZATION_KEY!;
 
   /** Dependencies */
-  const server: App = new App(express());
-  const app = server.app;
   const helper: Helper = new Helper();
 
   /**
@@ -62,11 +68,15 @@ describe("Chat tests", () => {
    * @async
    */
   beforeEach(async () => {
-    await userModel.deleteMany({});
+    await UserModel.deleteMany({});
+    await RoomModel.deleteMany({});
 
-    const user = await userModel.insertMany(userObjs);
+    const user = await UserModel.insertMany(userObjs);
     userId1 = user[0].id;
     userId2 = user[1].id;
+
+    const room = new RoomModel(roomObj);
+    const savedRoom = await room.save();
 
     const newToken = jwt.sign({ id: userId1 }, key, {
       expiresIn: "10s"
@@ -74,7 +84,7 @@ describe("Chat tests", () => {
 
     const chatObj: ChatObj = {
       participants: [userId1, userId2],
-      conversation: []
+      room: savedRoom.id
     };
 
     const newChat = new ChatModel(chatObj);
@@ -97,7 +107,7 @@ describe("Chat tests", () => {
    * Validates Chat findAll methods.
    */
   it("Should return all chats", async () => {
-    const result = await chai.request(app).get("/chat");
+    const result = await chai.request(app.app).get("/chat");
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("array");
@@ -109,7 +119,7 @@ describe("Chat tests", () => {
    * @async
    */
   it("Should return only one chat", async () => {
-    const result = await chai.request(app).get(`/chat/${chatId}`);
+    const result = await chai.request(app.app).get(`/chat/${chatId}`);
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("object");
@@ -126,7 +136,7 @@ describe("Chat tests", () => {
     };
 
     const result = await chai
-      .request(app)
+      .request(app.app)
       .post(`/chat/${userId1}`)
       .set("Authorization", token)
       .send(newChat);
@@ -146,7 +156,7 @@ describe("Chat tests", () => {
     };
 
     const result = await chai
-      .request(app)
+      .request(app.app)
       .put(`/chat/${userId1}/${chatId}`)
       .set("Authorization", token)
       .send(newChat);
@@ -161,7 +171,7 @@ describe("Chat tests", () => {
    */
   it("Should return status code 204 for user deletion", async () => {
     const result = await chai
-      .request(app)
+      .request(app.app)
       .delete(`/chat/${userId1}/${chatId}`)
       .set("Authorization", token);
 
@@ -180,7 +190,7 @@ describe("Chat tests", () => {
     };
 
     const result = await chai
-      .request(app)
+      .request(app.app)
       .put(`/chat/add-message/${userId1}/${chatId}`)
       .set("Authorization", token)
       .send(newMessage);

@@ -38,16 +38,16 @@ export default class ChatController {
         throw new Error("Chat no found");
       }
 
-      // const chatList: ChatObj[] = [];
-      // result.forEach((chat) => {
-      //   chatList.push(
-      //     ChatDTO.builder()
-      //       .setId(chat.id!)
-      //       .setParticipants({ ...chat.participants })
-      //       .setRoom(chat.room)
-      //       .build()
-      //   );
-      // });
+      const chatList: ChatObj[] = [];
+      result.forEach((chat) => {
+        chatList.push(
+          ChatDTO.builder()
+            .setId(chat.id!)
+            .setParticipants({ ...chat.participants })
+            .setRoom(chat.room)
+            .build()
+        );
+      });
 
       response.status(200).json(result);
     } catch (error) {
@@ -78,8 +78,6 @@ export default class ChatController {
         if (!result) {
           throw new Error("Chat no found");
         }
-
-        console.log(result);
 
         const chat: ChatObj = ChatDTO.builder()
           .setId(result.id!)

@@ -17,6 +17,9 @@ export default class RoomRoutes {
     this.initializeRoutes();
   }
 
+  /**
+   * Set all the room routes.
+   */
   private initializeRoutes(): void {
     this.router.get("/", this.controller.findAll);
     this.router.get("/:id", this.controller.findById);

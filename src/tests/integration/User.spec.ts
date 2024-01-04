@@ -1,13 +1,14 @@
+import "dotenv/config";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { type UserObj } from "../../types/Ambient";
-import App from "../../config/App";
 import Model from "../../models/UserModel";
 import Helper from "../../utils/Helper";
-import express from "express";
 import mongoose from "mongoose";
 import chaiHttp from "chai-http";
-import chai, { expect } from "chai";
 import jwt from "jsonwebtoken";
+import chai, { expect } from "chai";
+import App from "../../config/App";
+import express from "express";
 
 /**
  * User tests class.
@@ -15,6 +16,7 @@ import jwt from "jsonwebtoken";
 describe("User tests", () => {
   /** Properties */
   chai.use(chaiHttp);
+  const app = new App(express());
   let memorydb: MongoMemoryServer;
   let userId: mongoose.Schema.Types.ObjectId;
   let token: string;
@@ -31,8 +33,6 @@ describe("User tests", () => {
   const key: string = process.env.AUTHORIZATION_KEY!;
 
   /** Dependencies */
-  const server: App = new App(express());
-  const app = server.app;
   const helper: Helper = new Helper();
 
   /**
@@ -82,7 +82,7 @@ describe("User tests", () => {
    * @async
    */
   it("Should return all users", async () => {
-    const result = await chai.request(app).get("/user");
+    const result = await chai.request(app.app).get("/user");
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("array");
@@ -94,7 +94,7 @@ describe("User tests", () => {
    * @async
    */
   it("Should return only one user", async () => {
-    const result = await chai.request(app).get(`/user/${userId}`);
+    const result = await chai.request(app.app).get(`/user/${userId}`);
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("object");
@@ -106,7 +106,7 @@ describe("User tests", () => {
    * @async
    */
   it("Should return only one user by email", async () => {
-    const result = await chai.request(app).get(`/user/email/${userObj.email}`);
+    const result = await chai.request(app.app).get(`/user/email/${userObj.email}`);
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("object");
@@ -118,7 +118,7 @@ describe("User tests", () => {
    * @async
    */
   it("Should post a new user", async () => {
-    const result = await chai.request(app).post("/user").send(newUser);
+    const result = await chai.request(app.app).post("/user").send(newUser);
 
     expect(result).to.have.status(201);
     expect(result.body).to.be.an("object");
@@ -131,7 +131,7 @@ describe("User tests", () => {
    */
   it("Should return status code 204 for user update", async () => {
     const result = await chai
-      .request(app)
+      .request(app.app)
       .put(`/user/${userId}`)
       .set("Authorization", token)
       .send(newUser);
@@ -146,7 +146,7 @@ describe("User tests", () => {
    */
   it("Should return status code 204 for user deletion", async () => {
     const result = await chai
-      .request(app)
+      .request(app.app)
       .delete(`/user/${userId}`)
       .set("Authorization", token);
 

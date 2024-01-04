@@ -15,7 +15,7 @@ const httpServer: Server = http.createServer(app.app);
 serverConfig.config(httpServer);
 
 /** WebSocket connection */
-export const ws: WebSocketServer = new WebSocketServer({ server: httpServer });
+const ws: WebSocketServer = new WebSocketServer({ server: httpServer });
 new WebSocket(ws).config();
 
 /** Start server */

@@ -1,6 +1,9 @@
 import { Schema, model } from "mongoose";
 import { type RoomObj } from "../types/Ambient";
 
+/**
+ * Mongoose schema for room document.
+ */
 const RoomSchema = new Schema<RoomObj>({
   room: {
     type: String,
@@ -11,25 +14,28 @@ const RoomSchema = new Schema<RoomObj>({
       {
         id: {
           type: Schema.Types.ObjectId,
-          auto: true,
+          auto: true
         },
         datetime: {
           type: Date,
-          default: Date.now,
+          default: Date.now
         },
         sender: {
           type: Schema.Types.ObjectId,
           ref: "User",
-          required: true,
+          required: true
         },
         message: {
           type: String,
-          required: true,
-        },
-      },
+          required: true
+        }
+      }
     ],
-    default: [],
-  },
+    default: []
+  }
 });
 
+/**
+ * Mongoose model for room document.
+ */
 export default model<RoomObj>("Room", RoomSchema);

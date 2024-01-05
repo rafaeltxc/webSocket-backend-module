@@ -8,6 +8,7 @@
     "baseUrl": "./src",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "typeRoots": ["./node_modules/@types", "./src/types/"],
     "types": ["node", "mocha"],
     "paths": {

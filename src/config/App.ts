@@ -5,7 +5,8 @@ import UserRoute from "../routes/UserRoutes";
 import AuthRoutes from "../routes/AuthRoutes";
 import AppMiddlewares from "../middlewares/AppMiddlewares";
 import RoomRoutes from "../routes/RoomRoutes";
-import path from "path";
+import swaggerUi from "swagger-ui-express";
+import swaggerDoc from "../../swagger.json";
 
 /**
  * App class for app configuration.
@@ -14,7 +15,8 @@ import path from "path";
  */
 export default class App {
   /** Properties */
-  readonly app: Application;
+  public readonly app: Application;
+  private readonly version: string = "api/v1";
 
   /** Dependencies */
   private readonly user: UserRoute = new UserRoute();
@@ -56,12 +58,12 @@ export default class App {
    * @param {Application} app - App instantiation.
    */
   private routes(app: Application): void {
-    app.use("/docs", express.static(path.join(__dirname, "../../docs")));
+    app.use(`/${this.version}/docs/swagger`, swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
-    app.use("/user", this.user.router);
-    app.use("/chat", this.chat.router);
-    app.use("/auth", this.authorization.router);
-    app.use("/room", this.room.router);
+    app.use(`/${this.version}/user`, this.user.router);
+    app.use(`/${this.version}/chat`, this.chat.router);
+    app.use(`/${this.version}/room`, this.room.router);
+    app.use(`/${this.version}/auth`, this.authorization.router);
 
     app.use(this.middlewares.unknownEndpoint);
     app.use(this.middlewares.errorHandler);

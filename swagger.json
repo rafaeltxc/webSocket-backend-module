@@ -1,0 +1,678 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Chat API",
+    "description": "A chatting-like application with a WebSocket protocol implementation to handle real-time messaging.",
+    "license": {
+      "name": "MIT",
+      "url": "https://www.mit.edu/~amini/LICENSE.md"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "user",
+      "description": "Users operations."
+    },
+    {
+      "name": "chat",
+      "description": "Operations to handle users' chats."
+    },
+    {
+      "name": "room",
+      "description": "Operations to handle chat messages."
+    },
+    {
+      "name": "auth",
+      "description": "Authorization operations"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "UserObj": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "picture": {
+            "type": "string",
+            "format": "binary"
+          },
+          "token": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ChatObj": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "room": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RoomObj": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "room": {
+            "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageObj"
+            }
+          }
+        }
+      },
+      "MessageObj": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "datetime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sender": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/user": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get Users",
+        "description": "Retrieve all the users in the database",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "username": "string",
+                  "password": "string",
+                  "email": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Add a new user to the system",
+        "description": "Create a single user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "username": "string",
+                "password": "string",
+                "email": "string",
+                "picture": "Buffer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "username": "string",
+                  "password": "string",
+                  "email": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get user by id",
+        "description": "Return a single user from the database",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "username": "string",
+                  "password": "string",
+                  "email": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update user by id",
+        "description": "Update a user's details by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "username": "string",
+                "password": "string",
+                "email": "string",
+                "picture": "Buffer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Delete user by id",
+        "description": "Remove a user from the database by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/chat": {
+      "get": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Get all chats",
+        "description": "Retrieve a list of all chats",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "participants": [
+                    "string"
+                  ],
+                  "room": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Create a new chat",
+        "description": "Add a new chat to the system",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "participants": [
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "participants": [
+                    "string"
+                  ],
+                  "room": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/{id}": {
+      "get": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Get chat by id",
+        "description": "Retrieve a chat by its id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Chat's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "participants": [
+                    "string"
+                  ],
+                  "room": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Update chat by id",
+        "description": "Update a chat's details by its id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Chat's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "participants": [
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Delete chat by id",
+        "description": "Remove a chat from the system by its id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Chat's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/room": {
+      "get": {
+        "tags": [
+          "room"
+        ],
+        "summary": "Get all rooms",
+        "description": "Retrieve a list of all rooms",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "room": "string",
+                  "messages": [
+                    "object"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "room"
+        ],
+        "summary": "Create a new room",
+        "description": "Add a new room to the system",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "room": "string",
+                "messages": [
+                  "object"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "room": "string",
+                  "messages": [
+                    "object"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/room/{id}": {
+      "get": {
+        "tags": [
+          "room"
+        ],
+        "summary": "Get room by id",
+        "description": "Retrieve a room by its id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Room's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "string",
+                  "room": "string",
+                  "messages": [
+                    "object"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "room"
+        ],
+        "summary": "Update room by id",
+        "description": "Update a room's details by its id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Room's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "room": "string",
+                "messages": [
+                  "object"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "room"
+        ],
+        "summary": "Delete room by id",
+        "description": "Remove a room from the system by its id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Room's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/auth/access-token/{id}": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "User's access token",
+        "description": "User's token to make requests in the system",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/sign-in/{id}": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "User's sign-in",
+        "description": "Handles user's authorization in the system",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "password": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

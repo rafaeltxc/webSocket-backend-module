@@ -1,7 +1,6 @@
 import { type WebSocketData } from "../types/Ambient";
 import { type WebSocket, type WebSocketServer } from "ws";
 import { v4 as uuid } from "uuid";
-import { connections } from "mongoose";
 
 export default class WebSocketConfig {
   /** Properties */

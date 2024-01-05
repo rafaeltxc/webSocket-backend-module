@@ -1,5 +1,4 @@
 import { type Schema } from "mongoose";
-import { type WebSocket } from "ws";
 
 /**
  * User main interface.

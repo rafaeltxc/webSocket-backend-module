@@ -1,6 +1,7 @@
 import { type WebSocketData } from "../types/Ambient";
 import { type WebSocket, type WebSocketServer } from "ws";
 import { v4 as uuid } from "uuid";
+import { connections } from "mongoose";
 
 export default class WebSocketConfig {
   /** Properties */
@@ -89,6 +90,7 @@ export default class WebSocketConfig {
 
     if (clients) {
       clients.delete(ws);
+      this.connections.delete(id);
       if (clients.size === 0) {
         clients.delete(ws);
       }

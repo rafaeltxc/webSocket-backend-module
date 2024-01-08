@@ -41,7 +41,7 @@ yarn/npm run dev
 The WebSockets right after connection, should receive a json with the following data:
 ```console
 {
-    roomId: uuid,         // Room id.
+    roomId: string,     // Room id.
     message: string,    // Message to be broadcasted.
     meta: string        // Action to be taken.
 }

@@ -107,7 +107,7 @@ describe("Chat tests", () => {
    * Validates Chat findAll methods.
    */
   it("Should return all chats", async () => {
-    const result = await chai.request(app.app).get("/chat");
+    const result = await chai.request(app.app).get("/api/v1/chat");
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("array");
@@ -119,7 +119,7 @@ describe("Chat tests", () => {
    * @async
    */
   it("Should return only one chat", async () => {
-    const result = await chai.request(app.app).get(`/chat/${chatId}`);
+    const result = await chai.request(app.app).get(`/api/v1/chat/${chatId}`);
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("object");
@@ -137,7 +137,7 @@ describe("Chat tests", () => {
 
     const result = await chai
       .request(app.app)
-      .post(`/chat/${userId1}`)
+      .post(`/api/v1/chat/${userId1}`)
       .set("Authorization", token)
       .send(newChat);
 
@@ -157,7 +157,7 @@ describe("Chat tests", () => {
 
     const result = await chai
       .request(app.app)
-      .put(`/chat/${userId1}/${chatId}`)
+      .put(`/api/v1/chat/${userId1}/${chatId}`)
       .set("Authorization", token)
       .send(newChat);
 
@@ -172,7 +172,7 @@ describe("Chat tests", () => {
   it("Should return status code 204 for user deletion", async () => {
     const result = await chai
       .request(app.app)
-      .delete(`/chat/${userId1}/${chatId}`)
+      .delete(`/api/v1/chat/${userId1}/${chatId}`)
       .set("Authorization", token);
 
     expect(result).to.have.status(204);
@@ -191,7 +191,7 @@ describe("Chat tests", () => {
 
     const result = await chai
       .request(app.app)
-      .put(`/chat/add-message/${userId1}/${chatId}`)
+      .put(`/api/v1/chat/add-message/${userId1}/${chatId}`)
       .set("Authorization", token)
       .send(newMessage);
 

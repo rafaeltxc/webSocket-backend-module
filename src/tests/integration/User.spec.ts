@@ -82,7 +82,7 @@ describe("User tests", () => {
    * @async
    */
   it("Should return all users", async () => {
-    const result = await chai.request(app.app).get("/user");
+    const result = await chai.request(app.app).get("/api/v1/user");
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("array");
@@ -94,7 +94,7 @@ describe("User tests", () => {
    * @async
    */
   it("Should return only one user", async () => {
-    const result = await chai.request(app.app).get(`/user/${userId}`);
+    const result = await chai.request(app.app).get(`/api/v1/user/${userId}`);
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("object");
@@ -106,7 +106,7 @@ describe("User tests", () => {
    * @async
    */
   it("Should return only one user by email", async () => {
-    const result = await chai.request(app.app).get(`/user/email/${userObj.email}`);
+    const result = await chai.request(app.app).get(`/api/v1/user/email/${userObj.email}`);
 
     expect(result).to.have.status(200);
     expect(result.body).to.be.an("object");
@@ -118,7 +118,7 @@ describe("User tests", () => {
    * @async
    */
   it("Should post a new user", async () => {
-    const result = await chai.request(app.app).post("/user").send(newUser);
+    const result = await chai.request(app.app).post("/api/v1/user").send(newUser);
 
     expect(result).to.have.status(201);
     expect(result.body).to.be.an("object");
@@ -132,7 +132,7 @@ describe("User tests", () => {
   it("Should return status code 204 for user update", async () => {
     const result = await chai
       .request(app.app)
-      .put(`/user/${userId}`)
+      .put(`/api/v1/user/${userId}`)
       .set("Authorization", token)
       .send(newUser);
 
@@ -147,7 +147,7 @@ describe("User tests", () => {
   it("Should return status code 204 for user deletion", async () => {
     const result = await chai
       .request(app.app)
-      .delete(`/user/${userId}`)
+      .delete(`/api/v1/user/${userId}`)
       .set("Authorization", token);
 
     expect(result).to.have.status(204);
